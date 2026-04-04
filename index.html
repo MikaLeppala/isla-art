@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Art by Isla ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(160deg, #2d0057 0%, #6b21a8 45%, #a855f7 100%);
+      min-height: 100vh;
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Twinkling stars ── */
+    #stars {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .star {
+      position: absolute; background: white; border-radius: 50%;
+      animation: twinkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: .15; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.6); }
+    }
+
+    /* ── Layout ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1280px; margin: 0 auto; padding: 16px 16px 32px;
+    }
+
+    /* ── Header ── */
+    header { text-align: center; padding: 28px 12px 18px; }
+    header h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,255,255,.4), 3px 4px 0 rgba(0,0,0,.25);
+      letter-spacing: 2px;
+      animation: float 4s ease-in-out infinite;
+      display: inline-block;
+    }
+    header p {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(.95rem, 2.5vw, 1.4rem);
+      color: rgba(255,255,255,.88);
+      margin-top: 6px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,.35);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-9px); }
+    }
+
+    /* ── Studio card ── */
+    .studio {
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 16px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+      border: 1.5px solid rgba(255,255,255,.2);
+      margin-top: 16px;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.18); border-radius: 18px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    .tb-sep {
+      width: 1px; height: 32px;
+      background: rgba(255,255,255,.3); flex-shrink: 0;
+    }
+    .tb-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: .88rem; color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,.3); white-space: nowrap;
+    }
+    .tb-group { display: flex; align-items: center; gap: 7px; }
+
+    /* tool buttons */
+    .tool-btn {
+      font-family: 'Fredoka One', cursive; font-size: .9rem;
+      border: none; border-radius: 12px; padding: 7px 13px; cursor: pointer;
+      background: rgba(255,255,255,.25); color: #fff;
+      transition: transform .15s, background .15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    }
+    .tool-btn:hover   { transform: scale(1.07); background: rgba(255,255,255,.4); }
+    .tool-btn.active  { background: #fff; color: #6b21a8; box-shadow: 0 0 0 3px rgba(255,255,255,.4); }
+
+    /* colour swatches */
+    .swatch {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+      transition: transform .15s, border-color .15s;
+      flex-shrink: 0;
+    }
+    .swatch:hover  { transform: scale(1.25); }
+    .swatch.active { border-color: #fff; transform: scale(1.35); }
+
+    /* rainbow picker button */
+    .rainbow-btn {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 3px solid #fff;
+      background: conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+      transition: transform .15s;
+      flex-shrink: 0;
+    }
+    .rainbow-btn:hover { transform: scale(1.25); }
+    #custom-color-input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    /* current colour chip */
+    #color-chip {
+      width: 34px; height: 34px; border-radius: 10px;
+      border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      flex-shrink: 0;
+    }
+
+    /* brush size buttons */
+    .brush-btn {
+      border: none; border-radius: 50%; cursor: pointer;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      transition: transform .15s, background .15s;
+      flex-shrink: 0;
+    }
+    .brush-btn:hover  { transform: scale(1.15); background: rgba(255,255,255,.45); }
+    .brush-btn.active { background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.4); }
+    .brush-dot { background: #6b21a8; border-radius: 50%; }
+
+    /* action buttons */
+    .action-btn {
+      font-family: 'Fredoka One', cursive; font-size: .92rem;
+      border: none; border-radius: 14px; padding: 8px 16px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,.22);
+      display: flex; align-items: center; gap: 5px;
+      transition: transform .15s, box-shadow .15s;
+      white-space: nowrap;
+    }
+    .action-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(0,0,0,.3); }
+    .action-btn:active { transform: translateY(0); }
+    .btn-undo  { background: linear-gradient(135deg,#ff9a9e,#fecfef); color: #7b0030; }
+    .btn-clear { background: linear-gradient(135deg,#ffecd2,#fcb69f); color: #7b3000; }
+    .btn-save  { background: linear-gradient(135deg,#a8edea,#fed6e3); color: #006b5a; }
+
+    .spacer { flex: 1; }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      background: #fff; cursor: crosshair;
+      touch-action: none;
+    }
+    .canvas-wrap.erasing { cursor: cell; }
+    #drawing-svg {
+      display: block; width: 100%; height: auto;
+      touch-action: none;
+    }
+
+    /* ── Status bar ── */
+    .statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 10px; padding: 6px 14px;
+      background: rgba(255,255,255,.14); border-radius: 12px;
+      color: rgba(255,255,255,.75); font-size: .78rem;
+    }
+
+    /* ── Sparkle emoji pop ── */
+    .pop {
+      position: fixed; font-size: 1.4rem; pointer-events: none; z-index: 9999;
+      animation: pop-anim .75s ease-out forwards;
+    }
+    @keyframes pop-anim {
+      0%   { opacity: 1; transform: translateY(0) scale(.5); }
+      60%  { opacity: 1; transform: translateY(-28px) scale(1.3); }
+      100% { opacity: 0; transform: translateY(-48px) scale(.8); }
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 18px;
+      color: rgba(255,255,255,.5); font-size: .82rem; margin-top: 6px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 560px) {
+      .swatch { width: 24px; height: 24px; }
+      .rainbow-btn { width: 24px; height: 24px; }
+      .action-btn { padding: 7px 11px; font-size: .82rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div class="page">
+  <header>
+    <h1>🎨 Art by Isla ✨</h1>
+    <p>Welcome to Art by Isla &mdash; A site where only your creativity is the limit</p>
+  </header>
+
+  <div class="studio">
+
+    <!-- ── Toolbar ── -->
+    <div class="toolbar">
+
+      <!-- Tool selector -->
+      <div class="tb-group">
+        <button class="tool-btn active" id="btn-pen"    onclick="setTool('pen')">✏️ Pen</button>
+        <button class="tool-btn"        id="btn-eraser" onclick="setTool('eraser')">🧽 Eraser</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Colour palette -->
+      <div class="tb-group" style="flex-wrap:wrap; max-width:260px;">
+        <span class="tb-label">🎨</span>
+        <div id="palette" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+        <div style="position:relative;">
+          <div class="rainbow-btn" onclick="document.getElementById('custom-color-input').click()" title="Pick any colour"></div>
+          <input type="color" id="custom-color-input" onchange="pickCustomColor(this.value)">
+        </div>
+      </div>
+
+      <!-- Current colour chip -->
+      <div id="color-chip"></div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Brush size -->
+      <div class="tb-group">
+        <span class="tb-label">Size</span>
+        <div id="brush-sizes" style="display:flex;align-items:center;gap:7px;"></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <!-- Actions -->
+      <div class="tb-group">
+        <button class="action-btn btn-undo"  onclick="undo()"         title="Undo (Ctrl+Z)">↩️ Undo</button>
+        <button class="action-btn btn-clear" onclick="clearAll()"     title="Clear canvas">🗑️ Clear</button>
+        <button class="action-btn btn-save"  onclick="saveDrawing()"  title="Save SVG (Ctrl+S)">💾 Save</button>
+      </div>
+    </div>
+
+    <!-- ── SVG Canvas ── -->
+    <div class="canvas-wrap" id="canvas-wrap">
+      <svg id="drawing-svg"
+           viewBox="0 0 1400 900"
+           xmlns="http://www.w3.org/2000/svg">
+        <rect id="bg-rect" width="1400" height="900" fill="white"/>
+        <g id="strokes"></g>
+      </svg>
+    </div>
+
+    <!-- ── Status bar ── -->
+    <div class="statusbar">
+      <span id="sb-strokes">0 strokes</span>
+      <span>✨ Isla's Art Studio ✨</span>
+      <span id="sb-tool">Tool: Pen</span>
+    </div>
+  </div>
+
+  <footer>Made with 💜 for Isla &nbsp;&bull;&nbsp; Saves as <strong>.svg</strong> — convert to 3D with any SVG→STL tool!</footer>
+</div>
+
+<script>
+// ════════════════════════════════
+//  STARS
+// ════════════════════════════════
+;(function(){
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 55; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 4 + 1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*3}s;--delay:${Math.random()*4}s;`;
+    c.appendChild(s);
+  }
+})();
+
+// ════════════════════════════════
+//  STATE
+// ════════════════════════════════
+const SVG      = document.getElementById('drawing-svg');
+const STROKES  = document.getElementById('strokes');
+const WRAP     = document.getElementById('canvas-wrap');
+const VW = 1400, VH = 900;
+
+let tool        = 'pen';
+let color       = '#2d1b69';
+let brushSize   = 4;
+let drawing     = false;
+let curPath     = null;
+let curPoints   = [];
+let history     = [];   // array of SVGElement — for undo
+
+// ════════════════════════════════
+//  COLOURS
+// ════════════════════════════════
+const COLORS = [
+  '#111111','#ffffff',
+  '#e63946','#f4a261','#f9c74f',
+  '#43aa8b','#4cc9f0','#4361ee',
+  '#7b2d8b','#e040fb','#ff80ab',
+  '#795548','#aed6f1','#a8e6cf',
+  '#ffcdd2','#fff9c4',
+];
+
+function buildPalette() {
+  const el = document.getElementById('palette');
+  COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'swatch';
+    sw.style.background = c;
+    if (c === '#ffffff') sw.style.boxShadow = '0 0 0 1.5px #aaa, 0 2px 8px rgba(0,0,0,.2)';
+    sw.title = c;
+    sw.dataset.color = c;
+    sw.onclick = () => chooseColor(c);
+    el.appendChild(sw);
+  });
+  chooseColor(color);
+}
+
+function chooseColor(c) {
+  color = c;
+  document.getElementById('color-chip').style.background = c;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c));
+  if (tool === 'eraser') setTool('pen');
+}
+
+function pickCustomColor(c) {
+  // add/update the custom swatch
+  let custom = document.querySelector('.swatch[data-custom]');
+  if (!custom) {
+    custom = document.createElement('div');
+    custom.className = 'swatch';
+    custom.dataset.custom = '1';
+    document.getElementById('palette').appendChild(custom);
+  }
+  custom.style.background = c;
+  custom.dataset.color = c;
+  custom.title = c;
+  custom.onclick = () => chooseColor(c);
+  chooseColor(c);
+}
+
+// ════════════════════════════════
+//  BRUSH SIZES
+// ════════════════════════════════
+const SIZES = [
+  {px:2, btn:26},
+  {px:4, btn:30},
+  {px:8, btn:36},
+  {px:16,btn:42},
+  {px:28,btn:50},
+];
+
+function buildBrushSizes() {
+  const el = document.getElementById('brush-sizes');
+  SIZES.forEach(({px, btn}) => {
+    const b = document.createElement('button');
+    b.className = 'brush-btn' + (px === brushSize ? ' active' : '');
+    b.style.width = b.style.height = btn + 'px';
+    b.title = px + 'px';
+    b.dataset.size = px;
+
+    const dot = document.createElement('div');
+    dot.className = 'brush-dot';
+    const ds = Math.min(px, btn - 8);
+    dot.style.width = dot.style.height = ds + 'px';
+    b.appendChild(dot);
+
+    b.onclick = () => {
+      brushSize = px;
+      document.querySelectorAll('.brush-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    el.appendChild(b);
+  });
+}
+
+// ════════════════════════════════
+//  TOOL
+// ════════════════════════════════
+function setTool(t) {
+  tool = t;
+  document.getElementById('btn-pen').classList.toggle('active', t === 'pen');
+  document.getElementById('btn-eraser').classList.toggle('active', t === 'eraser');
+  WRAP.classList.toggle('erasing', t === 'eraser');
+  document.getElementById('sb-tool').textContent = 'Tool: ' + (t === 'pen' ? 'Pen' : 'Eraser');
+}
+
+// ════════════════════════════════
+//  COORDINATE UTILS
+// ════════════════════════════════
+function svgPt(e) {
+  const r = SVG.getBoundingClientRect();
+  const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+  const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+  return {
+    x: ((cx - r.left)  / r.width)  * VW,
+    y: ((cy - r.top)   / r.height) * VH,
+    p: e.pressure > 0 ? e.pressure : 0.5,
+  };
+}
+
+// Smooth path from point list (quadratic bezier midpoint method)
+function buildD(pts) {
+  if (pts.length === 0) return '';
+  if (pts.length === 1) return `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  let d = `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = ((pts[i].x + pts[i+1].x) / 2).toFixed(1);
+    const my = ((pts[i].y + pts[i+1].y) / 2).toFixed(1);
+    d += ` Q${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)} ${mx} ${my}`;
+  }
+  const L = pts[pts.length-1];
+  d += ` L${L.x.toFixed(1)} ${L.y.toFixed(1)}`;
+  return d;
+}
+
+// ════════════════════════════════
+//  DRAWING EVENTS
+// ════════════════════════════════
+function onDown(e) {
+  if (e.button !== undefined && e.button !== 0) return;
+  e.preventDefault();
+  drawing = true;
+
+  const pt = svgPt(e);
+  curPoints = [pt];
+
+  curPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  curPath.setAttribute('fill', 'none');
+  curPath.setAttribute('stroke', tool === 'eraser' ? '#ffffff' : color);
+  curPath.setAttribute('stroke-width', tool === 'eraser' ? brushSize * 3 : brushSize);
+  curPath.setAttribute('stroke-linecap', 'round');
+  curPath.setAttribute('stroke-linejoin', 'round');
+  curPath.setAttribute('d', `M${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`);
+  STROKES.appendChild(curPath);
+
+  SVG.setPointerCapture(e.pointerId);
+}
+
+function onMove(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  curPoints.push(svgPt(e));
+  curPath.setAttribute('d', buildD(curPoints));
+}
+
+function onUp(e) {
+  if (!drawing) return;
+  drawing = false;
+  if (curPath) {
+    curPath.setAttribute('d', buildD(curPoints));
+    history.push(curPath);
+    updateStatus();
+    scheduleAutoSave();
+  }
+  curPath = null;
+  curPoints = [];
+}
+
+SVG.addEventListener('pointerdown',   onDown,  {passive: false});
+SVG.addEventListener('pointermove',   onMove,  {passive: false});
+SVG.addEventListener('pointerup',     onUp);
+SVG.addEventListener('pointercancel', onUp);
+SVG.addEventListener('contextmenu',   e => e.preventDefault());
+
+// ════════════════════════════════
+//  UNDO
+// ════════════════════════════════
+function undo() {
+  if (!history.length) return;
+  history.pop().remove();
+  updateStatus();
+  scheduleAutoSave();
+  pop(document.querySelector('.btn-undo'), '↩️');
+}
+
+// ════════════════════════════════
+//  CLEAR
+// ════════════════════════════════
+function clearAll() {
+  if (!history.length) return;
+  if (!confirm('Clear the whole canvas? 🎨')) return;
+  STROKES.innerHTML = '';
+  history = [];
+  updateStatus();
+  scheduleAutoSave();
+}
+
+// ════════════════════════════════
+//  SAVE AS SVG
+// ════════════════════════════════
+function saveDrawing() {
+  const clone = SVG.cloneNode(true);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.removeAttribute('style');
+
+  const xml = new XMLSerializer().serializeToString(clone);
+  const blob = new Blob([xml], {type: 'image/svg+xml'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const ts   = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  a.href = url; a.download = `isla-art-${ts}.svg`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  pop(document.querySelector('.btn-save'), '💾');
+}
+
+// ════════════════════════════════
+//  AUTO-SAVE (localStorage)
+// ════════════════════════════════
+let autoSaveTimer = null;
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    try { localStorage.setItem('isla-art', STROKES.innerHTML); } catch(_) {}
+  }, 1500);
+}
+
+function loadAutoSave() {
+  try {
+    const saved = localStorage.getItem('isla-art');
+    if (saved) {
+      STROKES.innerHTML = saved;
+      history = Array.from(STROKES.children);
+      updateStatus();
+    }
+  } catch(_) {}
+}
+
+// ════════════════════════════════
+//  STATUS
+// ════════════════════════════════
+function updateStatus() {
+  const n = history.length;
+  document.getElementById('sb-strokes').textContent = `${n} stroke${n!==1?'s':''}`;
+}
+
+// ════════════════════════════════
+//  SPARKLE POP
+// ════════════════════════════════
+function pop(el, emoji) {
+  const d = document.createElement('div');
+  d.className = 'pop'; d.textContent = emoji;
+  const r = el.getBoundingClientRect();
+  d.style.left = (r.left + r.width/2 - 12) + 'px';
+  d.style.top  = (r.top  - 4) + 'px';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 750);
+}
+
+// ════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ════════════════════════════════
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+  if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveDrawing(); }
+  if (!e.ctrlKey && !e.metaKey && e.key === 'e') setTool('eraser');
+  if (!e.ctrlKey && !e.metaKey && e.key === 'p') setTool('pen');
+});
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+buildPalette();
+buildBrushSizes();
+loadAutoSave();
+</script>
+
+</body>
+</html>
