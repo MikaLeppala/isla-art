@@ -48,6 +48,31 @@
       letter-spacing: 2px;
       animation: float 4s ease-in-out infinite;
       display: inline-block;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* ── Isla photo popup ── */
+    #isla-popup {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transform: scale(0.7) rotate(-4deg);
+      transition: opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,.5), 0 0 0 4px rgba(255,255,255,.35);
+      width: 220px;
+    }
+    #isla-popup.visible {
+      opacity: 1;
+      transform: scale(1) rotate(var(--rot, -3deg));
+    }
+    #isla-popup img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
     header p {
       font-family: 'Fredoka One', cursive;
@@ -209,6 +234,9 @@
 <body>
 
 <div id="stars"></div>
+
+<!-- Isla photo popup -->
+<div id="isla-popup"><img id="isla-popup-img" src="" alt="Isla!"></div>
 
 <div class="page">
   <header>
@@ -582,6 +610,54 @@ document.addEventListener('keydown', e => {
   if (!e.ctrlKey && !e.metaKey && e.key === 'e') setTool('eraser');
   if (!e.ctrlKey && !e.metaKey && e.key === 'p') setTool('pen');
 });
+
+// ════════════════════════════════
+//  ISLA PHOTO HOVER
+// ════════════════════════════════
+;(function(){
+  const photos = [
+    'photos/isla1.png',
+    'photos/isla2.png',
+    'photos/isla3.png',
+    'photos/isla4.png',
+  ];
+  const popup  = document.getElementById('isla-popup');
+  const img    = document.getElementById('isla-popup-img');
+  const h1     = document.querySelector('header h1');
+  let lastIdx  = -1;
+
+  function randomPhoto() {
+    let idx;
+    do { idx = Math.floor(Math.random() * photos.length); } while (idx === lastIdx && photos.length > 1);
+    lastIdx = idx;
+    return photos[idx];
+  }
+
+  h1.addEventListener('mouseenter', (e) => {
+    img.src = randomPhoto();
+    const rot = (Math.random() * 10 - 5).toFixed(1);
+    popup.style.setProperty('--rot', rot + 'deg');
+    positionPopup(e);
+    popup.classList.add('visible');
+  });
+
+  h1.addEventListener('mousemove', positionPopup);
+
+  h1.addEventListener('mouseleave', () => {
+    popup.classList.remove('visible');
+  });
+
+  function positionPopup(e) {
+    const pw = 220, ph = 280;
+    let x = e.clientX + 18;
+    let y = e.clientY - ph / 2;
+    if (x + pw > window.innerWidth  - 8) x = e.clientX - pw - 18;
+    if (y < 8) y = 8;
+    if (y + ph > window.innerHeight - 8) y = window.innerHeight - ph - 8;
+    popup.style.left = x + 'px';
+    popup.style.top  = y + 'px';
+  }
+})();
 
 // ════════════════════════════════
 //  INIT
