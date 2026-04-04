@@ -10,91 +10,57 @@
       margin: 0; padding: 0; box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
-
     body {
       background: linear-gradient(160deg, #2d0057 0%, #6b21a8 45%, #a855f7 100%);
-      min-height: 100vh;
-      font-family: 'Nunito', sans-serif;
-      overflow-x: hidden;
+      min-height: 100vh; font-family: 'Nunito', sans-serif; overflow-x: hidden;
     }
 
-    /* ── Twinkling stars ── */
-    #stars {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .star {
-      position: absolute; background: white; border-radius: 50%;
-      animation: twinkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
-    }
+    /* ── Stars ── */
+    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .star  { position: absolute; background: white; border-radius: 50%;
+             animation: twinkle var(--dur,3s) var(--delay,0s) infinite ease-in-out; }
     @keyframes twinkle {
-      0%, 100% { opacity: .15; transform: scale(1); }
-      50%       { opacity: 1;   transform: scale(1.6); }
+      0%,100% { opacity:.15; transform:scale(1); }
+      50%     { opacity:1;   transform:scale(1.6); }
     }
 
     /* ── Layout ── */
-    .page {
-      position: relative; z-index: 1;
-      max-width: 1280px; margin: 0 auto; padding: 16px 16px 32px;
-    }
+    .page { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 16px 16px 32px; }
 
     /* ── Header ── */
     header { text-align: center; padding: 28px 12px 18px; }
     header h1 {
       font-family: 'Fredoka One', cursive;
-      font-size: clamp(2rem, 6vw, 4rem);
-      color: #fff;
+      font-size: clamp(2rem, 6vw, 4rem); color: #fff;
       text-shadow: 0 0 30px rgba(255,255,255,.4), 3px 4px 0 rgba(0,0,0,.25);
-      letter-spacing: 2px;
-      animation: float 4s ease-in-out infinite;
-      display: inline-block;
-      cursor: pointer;
-      position: relative;
-    }
-
-    /* ── Isla photo popup ── */
-    #isla-popup {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0;
-      transform: scale(0.7) rotate(-4deg);
-      transition: opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 12px 48px rgba(0,0,0,.5), 0 0 0 4px rgba(255,255,255,.35);
-      width: 220px;
-    }
-    #isla-popup.visible {
-      opacity: 1;
-      transform: scale(1) rotate(var(--rot, -3deg));
-    }
-    #isla-popup img {
-      display: block;
-      width: 100%;
-      height: auto;
+      letter-spacing: 2px; animation: float 4s ease-in-out infinite;
+      display: inline-block; cursor: pointer; position: relative;
     }
     header p {
       font-family: 'Fredoka One', cursive;
-      font-size: clamp(.95rem, 2.5vw, 1.4rem);
-      color: rgba(255,255,255,.88);
-      margin-top: 6px;
-      text-shadow: 1px 1px 4px rgba(0,0,0,.35);
+      font-size: clamp(.95rem, 2.5vw, 1.4rem); color: rgba(255,255,255,.88);
+      margin-top: 6px; text-shadow: 1px 1px 4px rgba(0,0,0,.35);
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-9px); }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-9px); } }
+
+    /* ── Isla photo popup ── */
+    #isla-popup {
+      position: fixed; pointer-events: none; z-index: 9999; opacity: 0;
+      transform: scale(0.7) rotate(-4deg);
+      transition: opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,.5), 0 0 0 4px rgba(255,255,255,.35);
+      width: 220px;
     }
+    #isla-popup.visible { opacity:1; transform:scale(1) rotate(var(--rot,-3deg)); }
+    #isla-popup img { display:block; width:100%; height:auto; }
 
     /* ── Studio card ── */
     .studio {
-      background: rgba(255,255,255,.14);
-      backdrop-filter: blur(14px);
-      border-radius: 28px;
-      padding: 16px;
+      background: rgba(255,255,255,.14); backdrop-filter: blur(14px);
+      border-radius: 28px; padding: 16px;
       box-shadow: 0 24px 64px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
-      border: 1.5px solid rgba(255,255,255,.2);
-      margin-top: 16px;
+      border: 1.5px solid rgba(255,255,255,.2); margin-top: 16px;
     }
 
     /* ── Toolbar ── */
@@ -103,131 +69,172 @@
       background: rgba(255,255,255,.18); border-radius: 18px;
       padding: 10px 14px; margin-bottom: 12px;
     }
-    .tb-sep {
-      width: 1px; height: 32px;
-      background: rgba(255,255,255,.3); flex-shrink: 0;
-    }
-    .tb-label {
-      font-family: 'Fredoka One', cursive;
-      font-size: .88rem; color: #fff;
-      text-shadow: 1px 1px 2px rgba(0,0,0,.3); white-space: nowrap;
-    }
-    .tb-group { display: flex; align-items: center; gap: 7px; }
+    .tb-sep  { width:1px; height:32px; background:rgba(255,255,255,.3); flex-shrink:0; }
+    .tb-label { font-family:'Fredoka One',cursive; font-size:.88rem; color:#fff;
+                text-shadow:1px 1px 2px rgba(0,0,0,.3); white-space:nowrap; }
+    .tb-group { display:flex; align-items:center; gap:7px; }
 
     /* tool buttons */
     .tool-btn {
-      font-family: 'Fredoka One', cursive; font-size: .9rem;
-      border: none; border-radius: 12px; padding: 7px 13px; cursor: pointer;
-      background: rgba(255,255,255,.25); color: #fff;
-      transition: transform .15s, background .15s;
-      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      font-family:'Fredoka One',cursive; font-size:.9rem;
+      border:none; border-radius:12px; padding:7px 13px; cursor:pointer;
+      background:rgba(255,255,255,.25); color:#fff;
+      transition:transform .15s, background .15s;
+      box-shadow:0 2px 8px rgba(0,0,0,.2);
     }
-    .tool-btn:hover   { transform: scale(1.07); background: rgba(255,255,255,.4); }
-    .tool-btn.active  { background: #fff; color: #6b21a8; box-shadow: 0 0 0 3px rgba(255,255,255,.4); }
+    .tool-btn:hover  { transform:scale(1.07); background:rgba(255,255,255,.4); }
+    .tool-btn.active { background:#fff; color:#6b21a8; box-shadow:0 0 0 3px rgba(255,255,255,.4); }
 
     /* colour swatches */
     .swatch {
-      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-      border: 3px solid transparent;
-      box-shadow: 0 2px 8px rgba(0,0,0,.3);
-      transition: transform .15s, border-color .15s;
-      flex-shrink: 0;
+      width:28px; height:28px; border-radius:50%; cursor:pointer;
+      border:3px solid transparent; box-shadow:0 2px 8px rgba(0,0,0,.3);
+      transition:transform .15s, border-color .15s; flex-shrink:0;
     }
-    .swatch:hover  { transform: scale(1.25); }
-    .swatch.active { border-color: #fff; transform: scale(1.35); }
+    .swatch:hover  { transform:scale(1.25); }
+    .swatch.active { border-color:#fff; transform:scale(1.35); }
 
-    /* rainbow picker button */
+    /* rainbow picker */
     .rainbow-btn {
-      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-      border: 3px solid #fff;
-      background: conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
-      box-shadow: 0 2px 8px rgba(0,0,0,.3);
-      transition: transform .15s;
-      flex-shrink: 0;
+      width:28px; height:28px; border-radius:50%; cursor:pointer; border:3px solid #fff;
+      background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+      box-shadow:0 2px 8px rgba(0,0,0,.3); transition:transform .15s; flex-shrink:0;
     }
-    .rainbow-btn:hover { transform: scale(1.25); }
-    #custom-color-input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .rainbow-btn:hover { transform:scale(1.25); }
+    #custom-color-input { position:absolute; opacity:0; width:0; height:0; }
 
     /* current colour chip */
-    #color-chip {
-      width: 34px; height: 34px; border-radius: 10px;
-      border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.4);
-      flex-shrink: 0;
-    }
+    #color-chip { width:34px; height:34px; border-radius:10px; border:3px solid #fff;
+                  box-shadow:0 2px 8px rgba(0,0,0,.4); flex-shrink:0; }
 
     /* brush size buttons */
     .brush-btn {
-      border: none; border-radius: 50%; cursor: pointer;
-      background: rgba(255,255,255,.25);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.2);
-      transition: transform .15s, background .15s;
-      flex-shrink: 0;
+      border:none; border-radius:50%; cursor:pointer; background:rgba(255,255,255,.25);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.2); transition:transform .15s, background .15s; flex-shrink:0;
     }
-    .brush-btn:hover  { transform: scale(1.15); background: rgba(255,255,255,.45); }
-    .brush-btn.active { background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.4); }
-    .brush-dot { background: #6b21a8; border-radius: 50%; }
+    .brush-btn:hover  { transform:scale(1.15); background:rgba(255,255,255,.45); }
+    .brush-btn.active { background:#fff; box-shadow:0 0 0 3px rgba(255,255,255,.4); }
+    .brush-dot { background:#6b21a8; border-radius:50%; }
+
+    /* ── Shape buttons ── */
+    .shape-btn {
+      width:38px; height:38px; border:none; border-radius:10px; cursor:pointer;
+      background:rgba(255,255,255,.25); color:#fff; font-size:1.2rem;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.2); transition:transform .15s, background .15s;
+      flex-shrink:0;
+    }
+    .shape-btn:hover  { transform:scale(1.15); background:rgba(255,255,255,.4); }
+    .shape-btn.active { background:#fff; color:#6b21a8; box-shadow:0 0 0 3px rgba(255,255,255,.4); }
+
+    /* ── Emoji current preview ── */
+    .emoji-preview {
+      font-size:1.7rem; line-height:1; cursor:pointer; user-select:none;
+      transition:transform .15s; display:inline-block;
+    }
+    .emoji-preview:hover { transform:scale(1.25); }
 
     /* action buttons */
     .action-btn {
-      font-family: 'Fredoka One', cursive; font-size: .92rem;
-      border: none; border-radius: 14px; padding: 8px 16px; cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,.22);
-      display: flex; align-items: center; gap: 5px;
-      transition: transform .15s, box-shadow .15s;
-      white-space: nowrap;
+      font-family:'Fredoka One',cursive; font-size:.92rem;
+      border:none; border-radius:14px; padding:8px 16px; cursor:pointer;
+      box-shadow:0 4px 14px rgba(0,0,0,.22);
+      display:flex; align-items:center; gap:5px;
+      transition:transform .15s, box-shadow .15s; white-space:nowrap;
     }
-    .action-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(0,0,0,.3); }
-    .action-btn:active { transform: translateY(0); }
-    .btn-undo  { background: linear-gradient(135deg,#ff9a9e,#fecfef); color: #7b0030; }
-    .btn-clear { background: linear-gradient(135deg,#ffecd2,#fcb69f); color: #7b3000; }
-    .btn-save  { background: linear-gradient(135deg,#a8edea,#fed6e3); color: #006b5a; }
-
-    .spacer { flex: 1; }
+    .action-btn:hover  { transform:translateY(-2px); box-shadow:0 7px 18px rgba(0,0,0,.3); }
+    .action-btn:active { transform:translateY(0); }
+    .btn-undo  { background:linear-gradient(135deg,#ff9a9e,#fecfef); color:#7b0030; }
+    .btn-clear { background:linear-gradient(135deg,#ffecd2,#fcb69f); color:#7b3000; }
+    .btn-save  { background:linear-gradient(135deg,#a8edea,#fed6e3); color:#006b5a; }
+    .spacer { flex:1; }
 
     /* ── Canvas ── */
     .canvas-wrap {
-      border-radius: 18px; overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-      background: #fff; cursor: crosshair;
-      touch-action: none;
+      border-radius:18px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.35);
+      background:#fff; cursor:crosshair; touch-action:none;
     }
-    .canvas-wrap.erasing { cursor: cell; }
-    #drawing-svg {
-      display: block; width: 100%; height: auto;
-      touch-action: none;
-    }
+    .canvas-wrap.erasing  { cursor:cell; }
+    .canvas-wrap.stamping { cursor:copy; }
+    #drawing-svg { display:block; width:100%; height:auto; touch-action:none; }
 
     /* ── Status bar ── */
     .statusbar {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 10px; padding: 6px 14px;
-      background: rgba(255,255,255,.14); border-radius: 12px;
-      color: rgba(255,255,255,.75); font-size: .78rem;
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:10px; padding:6px 14px;
+      background:rgba(255,255,255,.14); border-radius:12px;
+      color:rgba(255,255,255,.75); font-size:.78rem;
     }
 
-    /* ── Sparkle emoji pop ── */
-    .pop {
-      position: fixed; font-size: 1.4rem; pointer-events: none; z-index: 9999;
-      animation: pop-anim .75s ease-out forwards;
-    }
+    /* ── Sparkle pop ── */
+    .pop { position:fixed; font-size:1.4rem; pointer-events:none; z-index:9999;
+           animation:pop-anim .75s ease-out forwards; }
     @keyframes pop-anim {
-      0%   { opacity: 1; transform: translateY(0) scale(.5); }
-      60%  { opacity: 1; transform: translateY(-28px) scale(1.3); }
-      100% { opacity: 0; transform: translateY(-48px) scale(.8); }
+      0%   { opacity:1; transform:translateY(0) scale(.5); }
+      60%  { opacity:1; transform:translateY(-28px) scale(1.3); }
+      100% { opacity:0; transform:translateY(-48px) scale(.8); }
     }
 
     /* ── Footer ── */
-    footer {
-      text-align: center; padding: 18px;
-      color: rgba(255,255,255,.5); font-size: .82rem; margin-top: 6px;
+    footer { text-align:center; padding:18px; color:rgba(255,255,255,.5); font-size:.82rem; margin-top:6px; }
+
+    /* ══════════════════════════════
+       EMOJI PICKER MODAL
+    ══════════════════════════════ */
+    #emoji-modal {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      display:none; align-items:center; justify-content:center;
     }
+    #emoji-modal.open { display:flex; }
+
+    #emoji-panel {
+      background:linear-gradient(160deg, #3b0070, #7c3aed);
+      border-radius:24px; padding:20px;
+      width:min(93vw, 500px); max-height:75vh;
+      display:flex; flex-direction:column; gap:12px;
+      box-shadow:0 24px 64px rgba(0,0,0,.55);
+      border:1.5px solid rgba(255,255,255,.25);
+    }
+    #emoji-panel-header { display:flex; justify-content:space-between; align-items:center; }
+    #emoji-panel-header h3 { font-family:'Fredoka One',cursive; color:#fff; font-size:1.3rem; }
+    #emoji-close {
+      font-size:1.4rem; color:rgba(255,255,255,.7); cursor:pointer;
+      border:none; background:none; line-height:1; padding:4px 10px;
+      border-radius:8px; transition:background .15s;
+    }
+    #emoji-close:hover { background:rgba(255,255,255,.2); color:#fff; }
+
+    #emoji-cat-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+    .emoji-cat-tab {
+      font-family:'Fredoka One',cursive; font-size:.78rem;
+      border:none; border-radius:10px; padding:5px 10px; cursor:pointer;
+      background:rgba(255,255,255,.2); color:#fff; transition:background .15s;
+    }
+    .emoji-cat-tab.active { background:#fff; color:#6b21a8; }
+    .emoji-cat-tab:hover  { background:rgba(255,255,255,.35); }
+
+    #emoji-grid {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(46px,1fr));
+      gap:4px; overflow-y:auto; padding-right:4px;
+    }
+    #emoji-grid::-webkit-scrollbar { width:6px; }
+    #emoji-grid::-webkit-scrollbar-track { background:rgba(255,255,255,.1); border-radius:3px; }
+    #emoji-grid::-webkit-scrollbar-thumb { background:rgba(255,255,255,.4); border-radius:3px; }
+
+    .emoji-item {
+      font-size:1.65rem; text-align:center; cursor:pointer;
+      border-radius:10px; padding:5px; line-height:1;
+      transition:background .1s, transform .1s; user-select:none;
+    }
+    .emoji-item:hover { background:rgba(255,255,255,.25); transform:scale(1.25); }
 
     /* ── Responsive ── */
     @media (max-width: 560px) {
-      .swatch { width: 24px; height: 24px; }
-      .rainbow-btn { width: 24px; height: 24px; }
-      .action-btn { padding: 7px 11px; font-size: .82rem; }
+      .swatch { width:24px; height:24px; }
+      .rainbow-btn { width:24px; height:24px; }
+      .action-btn { padding:7px 11px; font-size:.82rem; }
     }
   </style>
 </head>
@@ -237,6 +244,18 @@
 
 <!-- Isla photo popup -->
 <div id="isla-popup"><img id="isla-popup-img" src="" alt="Isla!"></div>
+
+<!-- ══ Emoji Picker Modal ══ -->
+<div id="emoji-modal">
+  <div id="emoji-panel">
+    <div id="emoji-panel-header">
+      <h3>✨ Pick an Emoji</h3>
+      <button id="emoji-close" onclick="closeEmojiPicker()">✕</button>
+    </div>
+    <div id="emoji-cat-tabs"></div>
+    <div id="emoji-grid"></div>
+  </div>
+</div>
 
 <div class="page">
   <header>
@@ -249,7 +268,7 @@
     <!-- ── Toolbar ── -->
     <div class="toolbar">
 
-      <!-- Tool selector -->
+      <!-- Draw tools -->
       <div class="tb-group">
         <button class="tool-btn active" id="btn-pen"    onclick="setTool('pen')">✏️ Pen</button>
         <button class="tool-btn"        id="btn-eraser" onclick="setTool('eraser')">🧽 Eraser</button>
@@ -257,8 +276,27 @@
 
       <div class="tb-sep"></div>
 
+      <!-- Shapes -->
+      <div class="tb-group">
+        <span class="tb-label">Shapes</span>
+        <button class="shape-btn" id="sbtn-heart"       data-shape="heart"       onclick="selectShape('heart')"       title="Heart">♥</button>
+        <button class="shape-btn" id="sbtn-brokenHeart" data-shape="brokenHeart" onclick="selectShape('brokenHeart')" title="Broken Heart">💔</button>
+        <button class="shape-btn" id="sbtn-circle"      data-shape="circle"      onclick="selectShape('circle')"      title="Circle">●</button>
+        <button class="shape-btn" id="sbtn-square"      data-shape="square"      onclick="selectShape('square')"      title="Square">■</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Emoji tool -->
+      <div class="tb-group">
+        <button class="tool-btn" id="btn-emoji" onclick="openEmojiPicker()">😀 Emoji</button>
+        <span id="emoji-current" class="emoji-preview" onclick="openEmojiPicker()" title="Change emoji">😀</span>
+      </div>
+
+      <div class="tb-sep"></div>
+
       <!-- Colour palette -->
-      <div class="tb-group" style="flex-wrap:wrap; max-width:260px;">
+      <div class="tb-group" style="flex-wrap:wrap; max-width:270px;">
         <span class="tb-label">🎨</span>
         <div id="palette" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
         <div style="position:relative;">
@@ -266,13 +304,11 @@
           <input type="color" id="custom-color-input" onchange="pickCustomColor(this.value)">
         </div>
       </div>
-
-      <!-- Current colour chip -->
       <div id="color-chip"></div>
 
       <div class="tb-sep"></div>
 
-      <!-- Brush size -->
+      <!-- Brush & stamp size -->
       <div class="tb-group">
         <span class="tb-label">Size</span>
         <div id="brush-sizes" style="display:flex;align-items:center;gap:7px;"></div>
@@ -282,55 +318,64 @@
 
       <!-- Actions -->
       <div class="tb-group">
-        <button class="action-btn btn-undo"  onclick="undo()"         title="Undo (Ctrl+Z)">↩️ Undo</button>
-        <button class="action-btn btn-clear" onclick="clearAll()"     title="Clear canvas">🗑️ Clear</button>
-        <button class="action-btn btn-save"  onclick="saveDrawing()"  title="Save SVG (Ctrl+S)">💾 Save</button>
+        <button class="action-btn btn-undo"  onclick="undo()"        title="Undo (Ctrl+Z)">↩️ Undo</button>
+        <button class="action-btn btn-clear" onclick="clearAll()"    title="Clear canvas">🗑️ Clear</button>
+        <button class="action-btn btn-save"  onclick="saveDrawing()" title="Save SVG (Ctrl+S)">💾 Save</button>
       </div>
     </div>
 
     <!-- ── SVG Canvas ── -->
     <div class="canvas-wrap" id="canvas-wrap">
-      <svg id="drawing-svg"
-           viewBox="0 0 1400 900"
-           xmlns="http://www.w3.org/2000/svg">
+      <svg id="drawing-svg" viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
         <rect id="bg-rect" width="1400" height="900" fill="white"/>
         <g id="strokes"></g>
+        <!-- Selection UI — excluded from export -->
+        <g id="sel-ui" data-no-export="1" display="none" style="pointer-events:none">
+          <rect id="sel-rect" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="8,5" rx="6"/>
+          <circle class="sel-handle" data-handle="tl" id="sel-tl" r="11" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+          <circle class="sel-handle" data-handle="tr" id="sel-tr" r="11" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+          <circle class="sel-handle" data-handle="bl" id="sel-bl" r="11" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+          <circle class="sel-handle" data-handle="br" id="sel-br" r="11" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+        </g>
       </svg>
     </div>
 
     <!-- ── Status bar ── -->
     <div class="statusbar">
-      <span id="sb-strokes">0 strokes</span>
+      <span id="sb-items">0 items</span>
       <span>✨ Isla's Art Studio ✨</span>
       <span id="sb-tool">Tool: Pen</span>
     </div>
   </div>
 
-  <footer>Made with 💜 for Isla &nbsp;&bull;&nbsp; Saves as <strong>.svg</strong> — convert to 3D with any SVG→STL tool!</footer>
+  <footer>Made with 💜 for Isla &nbsp;&bull;&nbsp; Saves as <strong>.svg</strong> — perfect for 3D printing! &nbsp;&bull;&nbsp; <em>Delete</em> removes selected stamp</footer>
 </div>
 
 <script>
+'use strict';
+
 // ════════════════════════════════
 //  STARS
 // ════════════════════════════════
-;(function(){
+;(()=>{
   const c = document.getElementById('stars');
-  for (let i = 0; i < 55; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const sz = Math.random() * 4 + 1;
-    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*3}s;--delay:${Math.random()*4}s;`;
+  for (let i=0;i<55;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*4+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*3}s;--delay:${Math.random()*4}s;`;
     c.appendChild(s);
   }
 })();
 
 // ════════════════════════════════
-//  STATE
+//  CORE STATE
 // ════════════════════════════════
-const SVG      = document.getElementById('drawing-svg');
+const SVG_EL   = document.getElementById('drawing-svg');
 const STROKES  = document.getElementById('strokes');
+const SEL_UI   = document.getElementById('sel-ui');
 const WRAP     = document.getElementById('canvas-wrap');
-const VW = 1400, VH = 900;
+const VW=1400, VH=900;
+const NS = 'http://www.w3.org/2000/svg';
 
 let tool        = 'pen';
 let color       = '#2d1b69';
@@ -338,87 +383,65 @@ let brushSize   = 4;
 let drawing     = false;
 let curPath     = null;
 let curPoints   = [];
-let history     = [];   // array of SVGElement — for undo
+let history     = [];
 
 // ════════════════════════════════
 //  COLOURS
 // ════════════════════════════════
 const COLORS = [
-  '#111111','#ffffff',
-  '#e63946','#f4a261','#f9c74f',
-  '#43aa8b','#4cc9f0','#4361ee',
-  '#7b2d8b','#e040fb','#ff80ab',
-  '#795548','#aed6f1','#a8e6cf',
-  '#ffcdd2','#fff9c4',
+  '#111111','#ffffff','#e63946','#f4a261','#f9c74f',
+  '#43aa8b','#4cc9f0','#4361ee','#7b2d8b','#e040fb',
+  '#ff80ab','#795548','#aed6f1','#a8e6cf','#ffcdd2','#fff9c4',
 ];
 
-function buildPalette() {
-  const el = document.getElementById('palette');
-  COLORS.forEach(c => {
-    const sw = document.createElement('div');
-    sw.className = 'swatch';
-    sw.style.background = c;
-    if (c === '#ffffff') sw.style.boxShadow = '0 0 0 1.5px #aaa, 0 2px 8px rgba(0,0,0,.2)';
-    sw.title = c;
-    sw.dataset.color = c;
-    sw.onclick = () => chooseColor(c);
+function buildPalette(){
+  const el=document.getElementById('palette');
+  COLORS.forEach(c=>{
+    const sw=document.createElement('div');
+    sw.className='swatch'; sw.style.background=c;
+    if(c==='#ffffff') sw.style.boxShadow='0 0 0 1.5px #aaa,0 2px 8px rgba(0,0,0,.2)';
+    sw.title=c; sw.dataset.color=c;
+    sw.onclick=()=>chooseColor(c);
     el.appendChild(sw);
   });
   chooseColor(color);
 }
 
-function chooseColor(c) {
-  color = c;
-  document.getElementById('color-chip').style.background = c;
-  document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c));
-  if (tool === 'eraser') setTool('pen');
+function chooseColor(c){
+  color=c;
+  document.getElementById('color-chip').style.background=c;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.color===c));
+  if(tool==='eraser') setTool('pen');
 }
 
-function pickCustomColor(c) {
-  // add/update the custom swatch
-  let custom = document.querySelector('.swatch[data-custom]');
-  if (!custom) {
-    custom = document.createElement('div');
-    custom.className = 'swatch';
-    custom.dataset.custom = '1';
-    document.getElementById('palette').appendChild(custom);
+function pickCustomColor(c){
+  let cust=document.querySelector('.swatch[data-custom]');
+  if(!cust){
+    cust=document.createElement('div'); cust.className='swatch'; cust.dataset.custom='1';
+    document.getElementById('palette').appendChild(cust);
   }
-  custom.style.background = c;
-  custom.dataset.color = c;
-  custom.title = c;
-  custom.onclick = () => chooseColor(c);
+  cust.style.background=c; cust.dataset.color=c; cust.title=c;
+  cust.onclick=()=>chooseColor(c);
   chooseColor(c);
 }
 
 // ════════════════════════════════
 //  BRUSH SIZES
 // ════════════════════════════════
-const SIZES = [
-  {px:2, btn:26},
-  {px:4, btn:30},
-  {px:8, btn:36},
-  {px:16,btn:42},
-  {px:28,btn:50},
-];
+const SIZES=[{px:2,btn:26},{px:4,btn:30},{px:8,btn:36},{px:16,btn:42},{px:28,btn:50}];
 
-function buildBrushSizes() {
-  const el = document.getElementById('brush-sizes');
-  SIZES.forEach(({px, btn}) => {
-    const b = document.createElement('button');
-    b.className = 'brush-btn' + (px === brushSize ? ' active' : '');
-    b.style.width = b.style.height = btn + 'px';
-    b.title = px + 'px';
-    b.dataset.size = px;
-
-    const dot = document.createElement('div');
-    dot.className = 'brush-dot';
-    const ds = Math.min(px, btn - 8);
-    dot.style.width = dot.style.height = ds + 'px';
+function buildBrushSizes(){
+  const el=document.getElementById('brush-sizes');
+  SIZES.forEach(({px,btn})=>{
+    const b=document.createElement('button');
+    b.className='brush-btn'+(px===brushSize?' active':'');
+    b.style.width=b.style.height=btn+'px'; b.title=px+'px'; b.dataset.size=px;
+    const dot=document.createElement('div'); dot.className='brush-dot';
+    const ds=Math.min(px,btn-8); dot.style.width=dot.style.height=ds+'px';
     b.appendChild(dot);
-
-    b.onclick = () => {
-      brushSize = px;
-      document.querySelectorAll('.brush-btn').forEach(x => x.classList.remove('active'));
+    b.onclick=()=>{
+      brushSize=px;
+      document.querySelectorAll('.brush-btn').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
     };
     el.appendChild(b);
@@ -426,242 +449,445 @@ function buildBrushSizes() {
 }
 
 // ════════════════════════════════
-//  TOOL
+//  TOOL SWITCHING
 // ════════════════════════════════
-function setTool(t) {
-  tool = t;
-  document.getElementById('btn-pen').classList.toggle('active', t === 'pen');
-  document.getElementById('btn-eraser').classList.toggle('active', t === 'eraser');
-  WRAP.classList.toggle('erasing', t === 'eraser');
-  document.getElementById('sb-tool').textContent = 'Tool: ' + (t === 'pen' ? 'Pen' : 'Eraser');
+function setTool(t){
+  if(t==='pen'||t==='eraser') deselectStamp();
+  tool=t;
+  document.getElementById('btn-pen').classList.toggle('active',t==='pen');
+  document.getElementById('btn-eraser').classList.toggle('active',t==='eraser');
+  document.getElementById('btn-emoji').classList.toggle('active',t==='emoji');
+  WRAP.classList.toggle('erasing',  t==='eraser');
+  WRAP.classList.toggle('stamping', t==='emoji'||t==='shape');
+  if(t!=='shape') document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active'));
+  // handles only interactive in stamp modes
+  SEL_UI.style.pointerEvents=(t==='emoji'||t==='shape')?'all':'none';
+  const names={pen:'Pen',eraser:'Eraser',emoji:'Emoji',shape:'Shape: '+selectedShape};
+  document.getElementById('sb-tool').textContent='Tool: '+(names[t]||t);
 }
 
 // ════════════════════════════════
-//  COORDINATE UTILS
+//  COORDINATES
 // ════════════════════════════════
-function svgPt(e) {
-  const r = SVG.getBoundingClientRect();
-  const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-  const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-  return {
-    x: ((cx - r.left)  / r.width)  * VW,
-    y: ((cy - r.top)   / r.height) * VH,
-    p: e.pressure > 0 ? e.pressure : 0.5,
-  };
+function svgPt(e){
+  const r=SVG_EL.getBoundingClientRect();
+  const cx=e.clientX??e.touches?.[0]?.clientX??0;
+  const cy=e.clientY??e.touches?.[0]?.clientY??0;
+  return { x:((cx-r.left)/r.width)*VW, y:((cy-r.top)/r.height)*VH, p:e.pressure>0?e.pressure:.5 };
 }
 
-// Smooth path from point list (quadratic bezier midpoint method)
-function buildD(pts) {
-  if (pts.length === 0) return '';
-  if (pts.length === 1) return `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-  let d = `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const mx = ((pts[i].x + pts[i+1].x) / 2).toFixed(1);
-    const my = ((pts[i].y + pts[i+1].y) / 2).toFixed(1);
-    d += ` Q${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)} ${mx} ${my}`;
+// Smooth quadratic bezier path from point list
+function buildD(pts){
+  if(!pts.length) return '';
+  if(pts.length===1) return `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  let d=`M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  for(let i=1;i<pts.length-1;i++){
+    const mx=((pts[i].x+pts[i+1].x)/2).toFixed(1);
+    const my=((pts[i].y+pts[i+1].y)/2).toFixed(1);
+    d+=` Q${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)} ${mx} ${my}`;
   }
-  const L = pts[pts.length-1];
-  d += ` L${L.x.toFixed(1)} ${L.y.toFixed(1)}`;
-  return d;
+  const L=pts[pts.length-1];
+  return d+` L${L.x.toFixed(1)} ${L.y.toFixed(1)}`;
 }
 
 // ════════════════════════════════
 //  DRAWING EVENTS
 // ════════════════════════════════
-function onDown(e) {
-  if (e.button !== undefined && e.button !== 0) return;
+function onDown(e){
+  if(e.button!==undefined&&e.button!==0) return;
   e.preventDefault();
-  drawing = true;
+  const tgt=e.target;
 
-  const pt = svgPt(e);
-  curPoints = [pt];
-
-  curPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  curPath.setAttribute('fill', 'none');
-  curPath.setAttribute('stroke', tool === 'eraser' ? '#ffffff' : color);
-  curPath.setAttribute('stroke-width', tool === 'eraser' ? brushSize * 3 : brushSize);
-  curPath.setAttribute('stroke-linecap', 'round');
-  curPath.setAttribute('stroke-linejoin', 'round');
-  curPath.setAttribute('d', `M${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`);
-  STROKES.appendChild(curPath);
-
-  SVG.setPointerCapture(e.pointerId);
-}
-
-function onMove(e) {
-  if (!drawing) return;
-  e.preventDefault();
-  curPoints.push(svgPt(e));
-  curPath.setAttribute('d', buildD(curPoints));
-}
-
-function onUp(e) {
-  if (!drawing) return;
-  drawing = false;
-  if (curPath) {
-    curPath.setAttribute('d', buildD(curPoints));
-    history.push(curPath);
-    updateStatus();
-    scheduleAutoSave();
+  // ─ resize handle ─
+  if(tgt.classList.contains('sel-handle')&&selectedStamp){
+    resizingHandle=tgt.dataset.handle;
+    SVG_EL.setPointerCapture(e.pointerId);
+    return;
   }
-  curPath = null;
-  curPoints = [];
+
+  // ─ stamp mode ─
+  if(tool==='emoji'||tool==='shape'){
+    const stampEl=tgt.closest('[data-stamp]');
+    if(stampEl){
+      selectStamp(stampEl);
+    } else {
+      deselectStamp();
+      const pt=svgPt(e);
+      placeStamp(pt.x,pt.y);
+    }
+    SVG_EL.setPointerCapture(e.pointerId);
+    return;
+  }
+
+  // ─ drawing mode ─
+  deselectStamp();
+  drawing=true;
+  const pt=svgPt(e);
+  curPoints=[pt];
+  curPath=document.createElementNS(NS,'path');
+  curPath.setAttribute('fill','none');
+  curPath.setAttribute('stroke', tool==='eraser'?'#ffffff':color);
+  curPath.setAttribute('stroke-width', tool==='eraser'?brushSize*3:brushSize);
+  curPath.setAttribute('stroke-linecap','round');
+  curPath.setAttribute('stroke-linejoin','round');
+  curPath.setAttribute('d',`M${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`);
+  STROKES.appendChild(curPath);
+  SVG_EL.setPointerCapture(e.pointerId);
 }
 
-SVG.addEventListener('pointerdown',   onDown,  {passive: false});
-SVG.addEventListener('pointermove',   onMove,  {passive: false});
-SVG.addEventListener('pointerup',     onUp);
-SVG.addEventListener('pointercancel', onUp);
-SVG.addEventListener('contextmenu',   e => e.preventDefault());
+function onMove(e){
+  e.preventDefault();
+  if(resizingHandle&&selectedStamp){ resizeStamp(svgPt(e)); return; }
+  if(!drawing) return;
+  curPoints.push(svgPt(e));
+  curPath.setAttribute('d',buildD(curPoints));
+}
+
+function onUp(e){
+  if(resizingHandle){ resizingHandle=null; scheduleAutoSave(); return; }
+  if(!drawing) return;
+  drawing=false;
+  if(curPath){
+    curPath.setAttribute('d',buildD(curPoints));
+    history.push(curPath);
+    updateStatus(); scheduleAutoSave();
+  }
+  curPath=null; curPoints=[];
+}
+
+SVG_EL.addEventListener('pointerdown',   onDown,  {passive:false});
+SVG_EL.addEventListener('pointermove',   onMove,  {passive:false});
+SVG_EL.addEventListener('pointerup',     onUp);
+SVG_EL.addEventListener('pointercancel', onUp);
+SVG_EL.addEventListener('contextmenu',   e=>e.preventDefault());
+
+// ════════════════════════════════
+//  STAMP SYSTEM
+// ════════════════════════════════
+
+// Shape templates — normalized to ~[-50,50] coordinate space, centered at origin
+const SHAPE_DEFS = {
+  heart: (clr) =>
+    `<path fill="${clr}" d="M 0,-32 C 27,-50 50,-36 50,-14 C 50,5 5,32 0,32 C -5,32 -50,5 -50,-14 C -50,-36 -27,-50 0,-32 Z"/>`,
+
+  brokenHeart: (clr) =>
+    `<g transform="translate(-4,-2)">
+       <path fill="${clr}" d="M 0,32 L 8,20 L -8,2 L 8,-15 L 0,-32 C -27,-50 -50,-36 -50,-14 C -50,5 -5,32 0,32 Z"/>
+     </g>
+     <g transform="translate(4,2)">
+       <path fill="${clr}" d="M 0,-32 C 27,-50 50,-36 50,-14 C 50,5 5,32 0,32 L 8,20 L -8,2 L 8,-15 L 0,-32 Z"/>
+     </g>`,
+
+  circle: (clr) =>
+    `<circle cx="0" cy="0" r="50" fill="${clr}"/>`,
+
+  square: (clr) =>
+    `<rect x="-50" y="-50" width="100" height="100" rx="10" fill="${clr}"/>`,
+};
+
+let selectedEmoji   = '😀';
+let selectedShape   = 'heart';
+let selectedStamp   = null;   // { el, cx, cy, size }
+let resizingHandle  = null;   // 'tl' | 'tr' | 'bl' | 'br' | null
+const DEFAULT_STAMP_SIZE = 100;
+
+function placeStamp(cx, cy){
+  const g = document.createElementNS(NS, 'g');
+  g.setAttribute('data-stamp','1');
+
+  if(tool==='emoji'){
+    g.setAttribute('data-type','emoji');
+    g.setAttribute('data-emoji', selectedEmoji);
+    const txt=document.createElementNS(NS,'text');
+    txt.setAttribute('font-size', DEFAULT_STAMP_SIZE);
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('dominant-baseline','central');
+    txt.textContent=selectedEmoji;
+    g.appendChild(txt);
+  } else {
+    g.setAttribute('data-type','shape');
+    g.setAttribute('data-shape', selectedShape);
+    g.setAttribute('data-color', color);
+    g.innerHTML=SHAPE_DEFS[selectedShape](color);
+  }
+
+  applyStampTransform(g, cx, cy, DEFAULT_STAMP_SIZE);
+  STROKES.appendChild(g);
+  history.push(g);
+  updateStatus(); scheduleAutoSave();
+  selectStamp(g);
+}
+
+function applyStampTransform(g, cx, cy, size){
+  g.setAttribute('data-cx', cx);
+  g.setAttribute('data-cy', cy);
+  g.setAttribute('data-size', size);
+  const type=g.getAttribute('data-type');
+  if(type==='emoji'){
+    g.setAttribute('transform',`translate(${cx.toFixed(1)},${cy.toFixed(1)})`);
+    const txt=g.querySelector('text');
+    if(txt) txt.setAttribute('font-size', size.toFixed(1));
+  } else {
+    const sc=(size/100).toFixed(4);
+    g.setAttribute('transform',`translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})`);
+  }
+}
+
+function selectStamp(el){
+  selectedStamp={
+    el,
+    cx: parseFloat(el.getAttribute('data-cx')),
+    cy: parseFloat(el.getAttribute('data-cy')),
+    size: parseFloat(el.getAttribute('data-size')),
+  };
+  refreshSelUI();
+}
+
+function deselectStamp(){
+  selectedStamp=null;
+  SEL_UI.setAttribute('display','none');
+}
+
+function refreshSelUI(){
+  if(!selectedStamp){ SEL_UI.setAttribute('display','none'); return; }
+  SEL_UI.removeAttribute('display');
+  const {cx,cy,size}=selectedStamp;
+  const hs=size/2+8; // slight padding around bounding box
+
+  document.getElementById('sel-rect').setAttribute('x', cx-hs);
+  document.getElementById('sel-rect').setAttribute('y', cy-hs);
+  document.getElementById('sel-rect').setAttribute('width',  hs*2);
+  document.getElementById('sel-rect').setAttribute('height', hs*2);
+
+  [['sel-tl',cx-hs,cy-hs],
+   ['sel-tr',cx+hs,cy-hs],
+   ['sel-bl',cx-hs,cy+hs],
+   ['sel-br',cx+hs,cy+hs]].forEach(([id,hx,hy])=>{
+    document.getElementById(id).setAttribute('cx',hx);
+    document.getElementById(id).setAttribute('cy',hy);
+  });
+}
+
+function resizeStamp(pt){
+  if(!selectedStamp||!resizingHandle) return;
+  const {cx,cy,el}=selectedStamp;
+  const newSize=Math.max(20, Math.max(Math.abs(pt.x-cx), Math.abs(pt.y-cy))*2);
+  selectedStamp.size=newSize;
+  applyStampTransform(el,cx,cy,newSize);
+  refreshSelUI();
+}
+
+function deleteSelectedStamp(){
+  if(!selectedStamp) return;
+  const el=selectedStamp.el;
+  const idx=history.indexOf(el);
+  if(idx!==-1) history.splice(idx,1);
+  el.remove(); deselectStamp();
+  updateStatus(); scheduleAutoSave();
+}
+
+// ════════════════════════════════
+//  SHAPE SELECTION
+// ════════════════════════════════
+function selectShape(shape){
+  selectedShape=shape;
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.toggle('active',b.dataset.shape===shape));
+  setTool('shape');
+}
+
+// ════════════════════════════════
+//  EMOJI PICKER
+// ════════════════════════════════
+const EMOJI_CATS=[
+  {name:'😊 Faces',   emojis:['😀','😁','😂','🤣','😊','😍','🤩','😎','🥳','😜','🤪','😋','🥰','😇','🤗','😏','🥺','😢','😭','🤯','🤔','😤','😡','🤒','🤑','😴','🥱','🤭','🫣','🤫']},
+  {name:'🐱 Animals', emojis:['🦋','🐱','🐶','🦄','🐸','🐼','🦊','🐰','🐮','🐯','🦁','🐨','🐺','🦝','🐧','🦜','🐬','🐳','🦈','🐙','🐝','🦓','🐉','🦕','🦖','🦎','🐊','🐢','🦩','🦚']},
+  {name:'🌈 Nature',  emojis:['🌈','☀️','🌟','⭐','💫','🌸','🌺','🌻','🍀','🌙','❄️','🔥','💧','🌊','🍄','🌴','🌵','🌿','🍃','🌾','🌍','🌹','🌷','🌼','🌱','🌲','🌳','⛄','🌪️','🌅']},
+  {name:'🍕 Food',    emojis:['🍕','🍦','🍩','🍰','🍭','🍬','🍫','🧁','🍓','🍒','🍉','🌮','🍔','🍟','🥐','🧇','🥞','🍣','🍜','🥗','🍎','🍊','🍋','🍇','🍑','🥝','🌽','🥕','🧃','🍿']},
+  {name:'🎨 Fun',     emojis:['🎨','🎈','🎉','🎂','🎁','💎','👑','⚡','🎵','🎶','🎠','🏆','🎯','🎪','🎡','🎢','🎭','🎮','🪄','🎀','🥇','🎸','🎹','🥁','🎷','🪘','🎺','🎻','🧩','🪀']},
+  {name:'❤️ Hearts',  emojis:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💕','💞','💓','💗','💖','💝','💘','💟','❣️','💌','💔','🫀','💋','🥰','😍','💑','💏','🌹','💐','🎀','✨']},
+];
+let currentCat=0;
+
+function buildEmojiPicker(){
+  const tabs=document.getElementById('emoji-cat-tabs');
+  EMOJI_CATS.forEach((cat,i)=>{
+    const tab=document.createElement('button');
+    tab.className='emoji-cat-tab'+(i===0?' active':'');
+    tab.textContent=cat.name;
+    tab.onclick=()=>{
+      currentCat=i;
+      document.querySelectorAll('.emoji-cat-tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));
+      renderEmojiGrid(i);
+    };
+    tabs.appendChild(tab);
+  });
+  renderEmojiGrid(0);
+}
+
+function renderEmojiGrid(idx){
+  const grid=document.getElementById('emoji-grid');
+  grid.innerHTML='';
+  EMOJI_CATS[idx].emojis.forEach(emoji=>{
+    const btn=document.createElement('div');
+    btn.className='emoji-item'; btn.textContent=emoji;
+    btn.onclick=()=>pickEmoji(emoji);
+    grid.appendChild(btn);
+  });
+}
+
+function openEmojiPicker(){
+  document.getElementById('emoji-modal').classList.add('open');
+}
+function closeEmojiPicker(){
+  document.getElementById('emoji-modal').classList.remove('open');
+}
+function pickEmoji(emoji){
+  selectedEmoji=emoji;
+  document.getElementById('emoji-current').textContent=emoji;
+  closeEmojiPicker();
+  setTool('emoji');
+}
+
+// Close modal when clicking backdrop
+document.getElementById('emoji-modal').addEventListener('click',(e)=>{
+  if(e.target===document.getElementById('emoji-modal')) closeEmojiPicker();
+});
 
 // ════════════════════════════════
 //  UNDO
 // ════════════════════════════════
-function undo() {
-  if (!history.length) return;
-  history.pop().remove();
-  updateStatus();
-  scheduleAutoSave();
-  pop(document.querySelector('.btn-undo'), '↩️');
+function undo(){
+  if(!history.length) return;
+  const el=history.pop();
+  if(selectedStamp&&selectedStamp.el===el) deselectStamp();
+  el.remove();
+  updateStatus(); scheduleAutoSave();
+  pop(document.querySelector('.btn-undo'),'↩️');
 }
 
 // ════════════════════════════════
 //  CLEAR
 // ════════════════════════════════
-function clearAll() {
-  if (!history.length) return;
-  if (!confirm('Clear the whole canvas? 🎨')) return;
-  STROKES.innerHTML = '';
-  history = [];
-  updateStatus();
-  scheduleAutoSave();
+function clearAll(){
+  if(!history.length) return;
+  if(!confirm('Clear the whole canvas? 🎨')) return;
+  deselectStamp();
+  STROKES.innerHTML=''; history=[];
+  updateStatus(); scheduleAutoSave();
 }
 
 // ════════════════════════════════
 //  SAVE AS SVG
 // ════════════════════════════════
-function saveDrawing() {
-  const clone = SVG.cloneNode(true);
-  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+function saveDrawing(){
+  deselectStamp();
+  const clone=SVG_EL.cloneNode(true);
+  clone.setAttribute('xmlns',NS);
   clone.removeAttribute('style');
+  const noExp=clone.querySelector('[data-no-export]');
+  if(noExp) noExp.remove();
 
-  const xml = new XMLSerializer().serializeToString(clone);
-  const blob = new Blob([xml], {type: 'image/svg+xml'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  const ts   = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
-  a.href = url; a.download = `isla-art-${ts}.svg`;
+  const xml=new XMLSerializer().serializeToString(clone);
+  const blob=new Blob([xml],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const ts=new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  a.href=url; a.download=`isla-art-${ts}.svg`;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-
-  pop(document.querySelector('.btn-save'), '💾');
+  pop(document.querySelector('.btn-save'),'💾');
 }
 
 // ════════════════════════════════
-//  AUTO-SAVE (localStorage)
+//  AUTO-SAVE
 // ════════════════════════════════
-let autoSaveTimer = null;
-function scheduleAutoSave() {
+let autoSaveTimer=null;
+function scheduleAutoSave(){
   clearTimeout(autoSaveTimer);
-  autoSaveTimer = setTimeout(() => {
-    try { localStorage.setItem('isla-art', STROKES.innerHTML); } catch(_) {}
-  }, 1500);
+  autoSaveTimer=setTimeout(()=>{
+    try{ localStorage.setItem('isla-art',STROKES.innerHTML); }catch(_){}
+  },1500);
 }
-
-function loadAutoSave() {
-  try {
-    const saved = localStorage.getItem('isla-art');
-    if (saved) {
-      STROKES.innerHTML = saved;
-      history = Array.from(STROKES.children);
-      updateStatus();
-    }
-  } catch(_) {}
+function loadAutoSave(){
+  try{
+    const saved=localStorage.getItem('isla-art');
+    if(saved){ STROKES.innerHTML=saved; history=Array.from(STROKES.children); updateStatus(); }
+  }catch(_){}
 }
 
 // ════════════════════════════════
 //  STATUS
 // ════════════════════════════════
-function updateStatus() {
-  const n = history.length;
-  document.getElementById('sb-strokes').textContent = `${n} stroke${n!==1?'s':''}`;
+function updateStatus(){
+  const n=history.length;
+  document.getElementById('sb-items').textContent=`${n} item${n!==1?'s':''}`;
 }
 
 // ════════════════════════════════
 //  SPARKLE POP
 // ════════════════════════════════
-function pop(el, emoji) {
-  const d = document.createElement('div');
-  d.className = 'pop'; d.textContent = emoji;
-  const r = el.getBoundingClientRect();
-  d.style.left = (r.left + r.width/2 - 12) + 'px';
-  d.style.top  = (r.top  - 4) + 'px';
+function pop(el,emoji){
+  const d=document.createElement('div');
+  d.className='pop'; d.textContent=emoji;
+  const r=el.getBoundingClientRect();
+  d.style.left=(r.left+r.width/2-12)+'px';
+  d.style.top=(r.top-4)+'px';
   document.body.appendChild(d);
-  setTimeout(() => d.remove(), 750);
+  setTimeout(()=>d.remove(),750);
 }
 
 // ════════════════════════════════
 //  KEYBOARD SHORTCUTS
 // ════════════════════════════════
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey||e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
-  if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveDrawing(); }
-  if (!e.ctrlKey && !e.metaKey && e.key === 'e') setTool('eraser');
-  if (!e.ctrlKey && !e.metaKey && e.key === 'p') setTool('pen');
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){ e.preventDefault(); undo(); }
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){ e.preventDefault(); saveDrawing(); }
+  if(!e.ctrlKey&&!e.metaKey&&e.key==='e') setTool('eraser');
+  if(!e.ctrlKey&&!e.metaKey&&e.key==='p') setTool('pen');
+  if(e.key==='Escape'){ deselectStamp(); closeEmojiPicker(); }
+  if((e.key==='Delete'||e.key==='Backspace')&&selectedStamp&&document.activeElement===document.body){
+    e.preventDefault(); deleteSelectedStamp();
+  }
 });
 
 // ════════════════════════════════
 //  ISLA PHOTO HOVER
 // ════════════════════════════════
-;(function(){
-  const photos = [
-    'photos/isla1.png',
-    'photos/isla2.png',
-    'photos/isla3.png',
-    'photos/isla4.png',
-  ];
-  const popup  = document.getElementById('isla-popup');
-  const img    = document.getElementById('isla-popup-img');
-  const h1     = document.querySelector('header h1');
-  let lastIdx  = -1;
+;(()=>{
+  const photos=['photos/isla1.png','photos/isla2.png','photos/isla3.png','photos/isla4.png'];
+  const popup=document.getElementById('isla-popup');
+  const img=document.getElementById('isla-popup-img');
+  const h1=document.querySelector('header h1');
+  let lastIdx=-1;
 
-  function randomPhoto() {
+  function randomPhoto(){
     let idx;
-    do { idx = Math.floor(Math.random() * photos.length); } while (idx === lastIdx && photos.length > 1);
-    lastIdx = idx;
-    return photos[idx];
+    do{ idx=Math.floor(Math.random()*photos.length); }while(idx===lastIdx&&photos.length>1);
+    lastIdx=idx; return photos[idx];
   }
-
-  h1.addEventListener('mouseenter', (e) => {
-    img.src = randomPhoto();
-    const rot = (Math.random() * 10 - 5).toFixed(1);
-    popup.style.setProperty('--rot', rot + 'deg');
-    positionPopup(e);
-    popup.classList.add('visible');
+  h1.addEventListener('mouseenter',e=>{
+    img.src=randomPhoto();
+    popup.style.setProperty('--rot',(Math.random()*10-5).toFixed(1)+'deg');
+    pos(e); popup.classList.add('visible');
   });
+  h1.addEventListener('mousemove',pos);
+  h1.addEventListener('mouseleave',()=>popup.classList.remove('visible'));
 
-  h1.addEventListener('mousemove', positionPopup);
-
-  h1.addEventListener('mouseleave', () => {
-    popup.classList.remove('visible');
-  });
-
-  function positionPopup(e) {
-    const pw = 220, ph = 280;
-    let x = e.clientX + 18;
-    let y = e.clientY - ph / 2;
-    if (x + pw > window.innerWidth  - 8) x = e.clientX - pw - 18;
-    if (y < 8) y = 8;
-    if (y + ph > window.innerHeight - 8) y = window.innerHeight - ph - 8;
-    popup.style.left = x + 'px';
-    popup.style.top  = y + 'px';
+  function pos(e){
+    const pw=220,ph=280;
+    let x=e.clientX+18, y=e.clientY-ph/2;
+    if(x+pw>window.innerWidth-8) x=e.clientX-pw-18;
+    if(y<8) y=8;
+    if(y+ph>window.innerHeight-8) y=window.innerHeight-ph-8;
+    popup.style.left=x+'px'; popup.style.top=y+'px';
   }
 })();
 
 // ════════════════════════════════
 //  INIT
 // ════════════════════════════════
+buildEmojiPicker();
 buildPalette();
 buildBrushSizes();
 loadAutoSave();
