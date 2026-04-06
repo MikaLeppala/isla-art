@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Art by Isla ✨</title>
+  <title>Create art with Isla</title>
+  <meta name="description" content="Tools for creating art on web">
+  <meta property="og:title" content="Create art with Isla">
+  <meta property="og:description" content="Tools for creating art on web">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
@@ -236,6 +239,118 @@
       .rainbow-btn { width:24px; height:24px; }
       .action-btn { padding:7px 11px; font-size:.82rem; }
     }
+
+    /* ══════════════════════════════
+       AI MAGIC MODAL
+    ══════════════════════════════ */
+    .btn-ai { background: linear-gradient(135deg,#f9c74f,#f4a261); color:#7b3800; font-weight:700; }
+
+    #ai-modal {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      display:none; align-items:center; justify-content:center;
+    }
+    #ai-modal.open { display:flex; }
+
+    #ai-panel {
+      background:linear-gradient(160deg, #2d0057, #7c3aed);
+      border-radius:24px; padding:22px;
+      width:min(95vw, 560px);
+      display:flex; flex-direction:column; gap:14px;
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+      border:1.5px solid rgba(255,255,255,.25);
+      max-height:90vh; overflow-y:auto;
+    }
+    #ai-panel::-webkit-scrollbar { width:6px; }
+    #ai-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,.3); border-radius:3px; }
+
+    #ai-panel-header { display:flex; justify-content:space-between; align-items:center; }
+    #ai-panel-header h3 { font-family:'Fredoka One',cursive; color:#fff; font-size:1.35rem; }
+    #ai-panel-close {
+      font-size:1.4rem; color:rgba(255,255,255,.7); cursor:pointer;
+      border:none; background:none; line-height:1; padding:4px 10px;
+      border-radius:8px; transition:background .15s;
+    }
+    #ai-panel-close:hover { background:rgba(255,255,255,.2); color:#fff; }
+
+    /* sketch preview */
+    #ai-sketch-preview {
+      width:100%; border-radius:12px; overflow:hidden;
+      border:2px solid rgba(255,255,255,.2);
+      background:#111; max-height:180px; display:flex; align-items:center; justify-content:center;
+    }
+    #ai-sketch-preview img { width:100%; height:auto; display:block; max-height:180px; object-fit:contain; }
+
+    /* prompt input */
+    #ai-prompt-label { font-family:'Fredoka One',cursive; color:rgba(255,255,255,.9); font-size:.95rem; }
+    #ai-prompt {
+      width:100%; border-radius:12px; border:2px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.12); color:#fff; font-family:'Nunito',sans-serif;
+      font-size:1rem; padding:10px 14px; resize:none; outline:none;
+      transition:border-color .2s;
+    }
+    #ai-prompt::placeholder { color:rgba(255,255,255,.45); }
+    #ai-prompt:focus { border-color:rgba(255,255,255,.6); background:rgba(255,255,255,.18); }
+
+    /* style buttons */
+    .ai-style-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .style-btn {
+      font-family:'Fredoka One',cursive; font-size:.85rem;
+      border:2px solid rgba(255,255,255,.25); border-radius:12px;
+      padding:6px 13px; cursor:pointer; background:rgba(255,255,255,.15);
+      color:#fff; transition:all .15s; white-space:nowrap;
+    }
+    .style-btn:hover  { background:rgba(255,255,255,.3); }
+    .style-btn.active { background:#fff; color:#6b21a8; border-color:#fff; }
+
+    /* generate button */
+    #ai-generate-btn {
+      font-family:'Fredoka One',cursive; font-size:1.05rem;
+      border:none; border-radius:16px; padding:12px 24px; cursor:pointer;
+      background:linear-gradient(135deg,#f9c74f,#f4a261);
+      color:#7b3800; box-shadow:0 4px 20px rgba(249,199,79,.35);
+      transition:transform .15s, box-shadow .15s; align-self:center; width:100%;
+    }
+    #ai-generate-btn:hover  { transform:translateY(-2px); box-shadow:0 7px 24px rgba(249,199,79,.5); }
+    #ai-generate-btn:active { transform:translateY(0); }
+    #ai-generate-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    /* loading */
+    #ai-loading {
+      display:none; flex-direction:column; align-items:center;
+      gap:10px; padding:16px 0; color:rgba(255,255,255,.85);
+      font-family:'Fredoka One',cursive; font-size:1rem;
+    }
+    #ai-loading.show { display:flex; }
+    .ai-spinner { font-size:2.2rem; animation:ai-spin 1.2s linear infinite; }
+    @keyframes ai-spin { to { transform:rotate(360deg); } }
+
+    /* result */
+    #ai-result { display:none; flex-direction:column; gap:10px; }
+    #ai-result.show { display:flex; }
+    #ai-result-img {
+      width:100%; border-radius:14px; display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,.4);
+      border:2px solid rgba(255,255,255,.2);
+    }
+    .ai-result-actions { display:flex; gap:8px; }
+    .ai-result-btn {
+      font-family:'Fredoka One',cursive; font-size:.9rem; flex:1;
+      border:none; border-radius:12px; padding:9px 16px; cursor:pointer;
+      transition:transform .15s, box-shadow .15s;
+      box-shadow:0 3px 10px rgba(0,0,0,.25);
+    }
+    .ai-result-btn:hover { transform:translateY(-2px); }
+    .btn-download-ai { background:linear-gradient(135deg,#a8edea,#fed6e3); color:#006b5a; }
+    .btn-retry-ai    { background:linear-gradient(135deg,#ff9a9e,#fecfef); color:#7b0030; }
+
+    /* error */
+    #ai-error {
+      display:none; background:rgba(255,100,100,.2); border-radius:12px;
+      padding:12px 16px; color:#fff; font-size:.9rem; text-align:center;
+      border:1px solid rgba(255,100,100,.4);
+    }
+    #ai-error.show { display:block; }
   </style>
 </head>
 <body>
@@ -244,6 +359,62 @@
 
 <!-- Isla photo popup -->
 <div id="isla-popup"><img id="isla-popup-img" src="" alt="Isla!"></div>
+
+<!-- ══ AI Magic Modal ══ -->
+<div id="ai-modal">
+  <div id="ai-panel">
+    <div id="ai-panel-header">
+      <h3>✨ AI Magic Studio</h3>
+      <button id="ai-panel-close" onclick="closeAIModal()">✕</button>
+    </div>
+
+    <!-- Mini sketch preview -->
+    <div>
+      <div class="ai-style-row" style="margin-bottom:6px;">
+        <span style="font-family:'Fredoka One',cursive;color:rgba(255,255,255,.8);font-size:.9rem;">Your sketch:</span>
+      </div>
+      <div id="ai-sketch-preview"><img id="ai-sketch-img" src="" alt="your sketch"></div>
+    </div>
+
+    <!-- Prompt -->
+    <div>
+      <label id="ai-prompt-label" for="ai-prompt">Describe what to create:</label>
+      <textarea id="ai-prompt" rows="2" placeholder='e.g. "a magical unicorn in a rainbow forest"'></textarea>
+    </div>
+
+    <!-- Style selector -->
+    <div>
+      <div style="font-family:'Fredoka One',cursive;color:rgba(255,255,255,.8);font-size:.9rem;margin-bottom:8px;">Style:</div>
+      <div class="ai-style-row">
+        <button class="style-btn active" data-style="magical fantasy art, glowing colors, whimsical, enchanted">✨ Magical</button>
+        <button class="style-btn" data-style="cartoon illustration, bold outlines, fun, colorful, kids art">🎨 Cartoon</button>
+        <button class="style-btn" data-style="watercolour painting, soft washes, delicate, artistic, pastel">🌊 Watercolour</button>
+        <button class="style-btn" data-style="photorealistic, highly detailed, cinematic lighting, sharp">📸 Realistic</button>
+      </div>
+    </div>
+
+    <!-- Generate button -->
+    <button id="ai-generate-btn" onclick="generateAIImage()">✨ Generate!</button>
+
+    <!-- Loading -->
+    <div id="ai-loading">
+      <div class="ai-spinner">✨</div>
+      <span>Creating magic… this takes ~10 seconds</span>
+    </div>
+
+    <!-- Error -->
+    <div id="ai-error">Something went wrong! Check your internet connection and try again 🌈</div>
+
+    <!-- Result -->
+    <div id="ai-result">
+      <img id="ai-result-img" src="" alt="AI generated art">
+      <div class="ai-result-actions">
+        <button class="ai-result-btn btn-retry-ai"    onclick="generateAIImage()">🔄 Try Again</button>
+        <button class="ai-result-btn btn-download-ai" onclick="downloadAIImage()">💾 Download AI Art</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══ Emoji Picker Modal ══ -->
 <div id="emoji-modal">
@@ -318,6 +489,7 @@
 
       <!-- Actions -->
       <div class="tb-group">
+        <button class="action-btn btn-ai"    onclick="openAIModal()"  title="Generate AI art from sketch">✨ AI Art</button>
         <button class="action-btn btn-undo"  onclick="undo()"        title="Undo (Ctrl+Z)">↩️ Undo</button>
         <button class="action-btn btn-clear" onclick="clearAll()"    title="Clear canvas">🗑️ Clear</button>
         <button class="action-btn btn-save"  onclick="saveDrawing()" title="Save SVG (Ctrl+S)">💾 Save</button>
@@ -850,6 +1022,119 @@ document.addEventListener('keydown',e=>{
     e.preventDefault(); deleteSelectedStamp();
   }
 });
+
+// ════════════════════════════════
+//  AI MAGIC STUDIO
+// ════════════════════════════════
+let aiSelectedStyle = 'magical fantasy art, glowing colors, whimsical, enchanted';
+let aiLastPromptURL = null;
+
+// Style button selection
+document.querySelectorAll('.style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    aiSelectedStyle = btn.dataset.style;
+  });
+});
+
+// Close on backdrop click
+document.getElementById('ai-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('ai-modal')) closeAIModal();
+});
+
+async function svgToPreviewURL() {
+  return new Promise(resolve => {
+    try {
+      const clone = SVG_EL.cloneNode(true);
+      clone.querySelector('[data-no-export]')?.remove();
+      const svgData = new XMLSerializer().serializeToString(clone);
+      const img = new Image();
+      const c = document.createElement('canvas');
+      c.width = 700; c.height = 450;
+      img.onload = () => {
+        c.getContext('2d').drawImage(img, 0, 0, 700, 450);
+        resolve(c.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve('');
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
+    } catch(_) { resolve(''); }
+  });
+}
+
+async function openAIModal() {
+  document.getElementById('ai-result').classList.remove('show');
+  document.getElementById('ai-loading').classList.remove('show');
+  document.getElementById('ai-error').classList.remove('show');
+  document.getElementById('ai-modal').classList.add('open');
+  // Generate mini preview of current sketch
+  const previewURL = await svgToPreviewURL();
+  const previewImg = document.getElementById('ai-sketch-img');
+  if (previewURL) {
+    previewImg.src = previewURL;
+    document.getElementById('ai-sketch-preview').style.display = '';
+  } else {
+    document.getElementById('ai-sketch-preview').style.display = 'none';
+  }
+}
+
+function closeAIModal() {
+  document.getElementById('ai-modal').classList.remove('open');
+}
+
+async function generateAIImage() {
+  const prompt = document.getElementById('ai-prompt').value.trim();
+  if (!prompt) {
+    document.getElementById('ai-prompt').focus();
+    document.getElementById('ai-prompt').style.borderColor = '#f9c74f';
+    setTimeout(() => document.getElementById('ai-prompt').style.borderColor = '', 1500);
+    return;
+  }
+
+  // Show loading, hide result/error
+  document.getElementById('ai-result').classList.remove('show');
+  document.getElementById('ai-error').classList.remove('show');
+  document.getElementById('ai-loading').classList.add('show');
+  document.getElementById('ai-generate-btn').disabled = true;
+
+  const fullPrompt = `${prompt}, ${aiSelectedStyle}, vibrant colors, beautiful, highly detailed`;
+  const seed = Math.floor(Math.random() * 99999);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`
+            + `?model=flux&width=1024&height=768&nologo=true&enhance=true&seed=${seed}`;
+  aiLastPromptURL = url;
+
+  const img = document.getElementById('ai-result-img');
+  img.onload = () => {
+    document.getElementById('ai-loading').classList.remove('show');
+    document.getElementById('ai-result').classList.add('show');
+    document.getElementById('ai-generate-btn').disabled = false;
+  };
+  img.onerror = () => {
+    document.getElementById('ai-loading').classList.remove('show');
+    document.getElementById('ai-error').classList.add('show');
+    document.getElementById('ai-generate-btn').disabled = false;
+  };
+  img.src = url;
+}
+
+async function downloadAIImage() {
+  if (!aiLastPromptURL) return;
+  try {
+    const resp = await fetch(aiLastPromptURL);
+    const blob = await resp.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const ts = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+    a.download = `isla-ai-art-${ts}.png`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    pop(document.querySelector('.btn-download-ai'), '✨');
+  } catch(_) {
+    // fallback: open in new tab
+    window.open(aiLastPromptURL, '_blank');
+  }
+}
 
 // ════════════════════════════════
 //  ISLA PHOTO HOVER
