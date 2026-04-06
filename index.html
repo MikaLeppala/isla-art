@@ -179,6 +179,59 @@
       100% { opacity:0; transform:translateY(-48px) scale(.8); }
     }
 
+    /* ── Tools section ── */
+    .tools-section {
+      margin-top: 20px;
+    }
+    .tools-header {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 12px; padding: 0 4px;
+    }
+    .tools-title {
+      font-family: 'Fredoka One', cursive; font-size: 1.5rem;
+      color: #fff; text-shadow: 1px 2px 0 rgba(0,0,0,.25);
+    }
+    .tools-subtitle {
+      font-size: .85rem; color: rgba(255,255,255,.55);
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .tool-card {
+      background: rgba(255,255,255,.13);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255,255,255,.18);
+      border-radius: 20px;
+      padding: 20px;
+      cursor: pointer;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: transform .18s, box-shadow .18s, background .18s;
+      box-shadow: 0 6px 24px rgba(0,0,0,.2);
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,.2);
+      box-shadow: 0 12px 36px rgba(0,0,0,.3);
+    }
+    .tool-card:active { transform: translateY(-1px); }
+    .tool-card-icon { font-size: 2rem; line-height: 1; }
+    .tool-card-name {
+      font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+      color: #fff; letter-spacing: .3px;
+    }
+    .tool-card-desc {
+      font-size: .82rem; color: rgba(255,255,255,.7);
+      line-height: 1.45;
+    }
+    .tool-card-action {
+      margin-top: 4px;
+      font-family: 'Fredoka One', cursive; font-size: .9rem;
+      color: #f9c74f;
+      letter-spacing: .3px;
+    }
+
     /* ── Footer ── */
     footer { text-align:center; padding:18px; color:rgba(255,255,255,.5); font-size:.82rem; margin-top:6px; }
 
@@ -243,8 +296,6 @@
     /* ══════════════════════════════
        AI MAGIC MODAL
     ══════════════════════════════ */
-    .btn-ai { background: linear-gradient(135deg,#f9c74f,#f4a261); color:#7b3800; font-weight:700; }
-
     #ai-modal {
       position:fixed; inset:0; z-index:10000;
       background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
@@ -489,7 +540,6 @@
 
       <!-- Actions -->
       <div class="tb-group">
-        <button class="action-btn btn-ai"    onclick="openAIModal()"  title="Generate AI art from sketch">✨ AI Art</button>
         <button class="action-btn btn-undo"  onclick="undo()"        title="Undo (Ctrl+Z)">↩️ Undo</button>
         <button class="action-btn btn-clear" onclick="clearAll()"    title="Clear canvas">🗑️ Clear</button>
         <button class="action-btn btn-save"  onclick="saveDrawing()" title="Save SVG (Ctrl+S)">💾 Save</button>
@@ -517,6 +567,27 @@
       <span id="sb-items">0 items</span>
       <span>✨ Isla's Art Studio ✨</span>
       <span id="sb-tool">Tool: Pen</span>
+    </div>
+  </div>
+
+  <!-- ── Tools section ── -->
+  <div class="tools-section">
+    <div class="tools-header">
+      <span class="tools-title">🛠️ Tools</span>
+      <span class="tools-subtitle">Use your sketch as a starting point</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- AI Art tool -->
+      <div class="tool-card" onclick="openAIModal()">
+        <div class="tool-card-icon">✨</div>
+        <div class="tool-card-body">
+          <div class="tool-card-name">AI Art Generator</div>
+          <div class="tool-card-desc">Turn your sketch into a stunning AI‑generated image using the FLUX model. Free, no sign‑up needed.</div>
+        </div>
+        <div class="tool-card-action">Generate →</div>
+      </div>
+
     </div>
   </div>
 
