@@ -181,7 +181,8 @@
 
     /* ── Tools section ── */
     .tools-section {
-      margin-top: 20px;
+      margin-top: 16px;
+      margin-bottom: 20px;
     }
     .tools-header {
       display: flex; align-items: baseline; gap: 12px;
@@ -485,6 +486,27 @@
     <p>Welcome to Art by Isla &mdash; A site where only your creativity is the limit</p>
   </header>
 
+  <!-- ── Tools section ── -->
+  <div class="tools-section">
+    <div class="tools-header">
+      <span class="tools-title">🛠️ Tools</span>
+      <span class="tools-subtitle">Use your sketch as a starting point</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- AI Art tool -->
+      <div class="tool-card" onclick="openAIModal()">
+        <div class="tool-card-icon">✨</div>
+        <div class="tool-card-body">
+          <div class="tool-card-name">AI Art Generator</div>
+          <div class="tool-card-desc">Turn your sketch into a stunning AI‑generated image using the FLUX model. Free, no sign‑up needed.</div>
+        </div>
+        <div class="tool-card-action">Generate →</div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="studio">
 
     <!-- ── Toolbar ── -->
@@ -567,27 +589,6 @@
       <span id="sb-items">0 items</span>
       <span>✨ Isla's Art Studio ✨</span>
       <span id="sb-tool">Tool: Pen</span>
-    </div>
-  </div>
-
-  <!-- ── Tools section ── -->
-  <div class="tools-section">
-    <div class="tools-header">
-      <span class="tools-title">🛠️ Tools</span>
-      <span class="tools-subtitle">Use your sketch as a starting point</span>
-    </div>
-    <div class="tools-grid">
-
-      <!-- AI Art tool -->
-      <div class="tool-card" onclick="openAIModal()">
-        <div class="tool-card-icon">✨</div>
-        <div class="tool-card-body">
-          <div class="tool-card-name">AI Art Generator</div>
-          <div class="tool-card-desc">Turn your sketch into a stunning AI‑generated image using the FLUX model. Free, no sign‑up needed.</div>
-        </div>
-        <div class="tool-card-action">Generate →</div>
-      </div>
-
     </div>
   </div>
 
