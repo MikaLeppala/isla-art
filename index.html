@@ -151,6 +151,19 @@
     .btn-undo  { background:linear-gradient(135deg,#ff9a9e,#fecfef); color:#7b0030; }
     .btn-clear { background:linear-gradient(135deg,#ffecd2,#fcb69f); color:#7b3000; }
     .btn-save  { background:linear-gradient(135deg,#a8edea,#fed6e3); color:#006b5a; }
+    .btn-print { background:linear-gradient(135deg,#93c5fd,#818cf8); color:#1e3a5f; }
+
+    /* ── Print ── */
+    #print-area { display:none; }
+    @media print {
+      body > *:not(#print-area) { display:none !important; }
+      #print-area {
+        display:block !important;
+        position:fixed; inset:0; background:#fff;
+      }
+      #print-area svg { width:100vw; height:100vh; display:block; }
+      @page { margin:0; }
+    }
     .spacer { flex:1; }
 
     /* ── Canvas ── */
@@ -181,56 +194,54 @@
 
     /* ── Tools section ── */
     .tools-section {
-      margin-top: 16px;
-      margin-bottom: 20px;
+      margin-top: 14px;
+      margin-bottom: 16px;
     }
     .tools-header {
-      display: flex; align-items: baseline; gap: 12px;
-      margin-bottom: 12px; padding: 0 4px;
+      margin-bottom: 10px; padding: 0 4px;
     }
     .tools-title {
-      font-family: 'Fredoka One', cursive; font-size: 1.5rem;
+      font-family: 'Fredoka One', cursive; font-size: 1.1rem;
       color: #fff; text-shadow: 1px 2px 0 rgba(0,0,0,.25);
+      margin-right: 8px;
     }
     .tools-subtitle {
-      font-size: .85rem; color: rgba(255,255,255,.55);
+      font-size: .82rem; color: rgba(255,255,255,.6);
     }
     .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
+      display: flex; flex-wrap: wrap; gap: 10px;
     }
     .tool-card {
       background: rgba(255,255,255,.13);
       backdrop-filter: blur(12px);
       border: 1.5px solid rgba(255,255,255,.18);
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 10px 16px;
       cursor: pointer;
-      display: flex; flex-direction: column; gap: 10px;
+      display: flex; flex-direction: row; align-items: center; gap: 12px;
       transition: transform .18s, box-shadow .18s, background .18s;
-      box-shadow: 0 6px 24px rgba(0,0,0,.2);
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+      flex-shrink: 0;
     }
     .tool-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-2px);
       background: rgba(255,255,255,.2);
-      box-shadow: 0 12px 36px rgba(0,0,0,.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,.28);
     }
-    .tool-card:active { transform: translateY(-1px); }
-    .tool-card-icon { font-size: 2rem; line-height: 1; }
+    .tool-card:active { transform: translateY(0); }
+    .tool-card-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+    .tool-card-body { display: flex; flex-direction: column; gap: 2px; }
     .tool-card-name {
-      font-family: 'Fredoka One', cursive; font-size: 1.1rem;
-      color: #fff; letter-spacing: .3px;
+      font-family: 'Fredoka One', cursive; font-size: .95rem;
+      color: #fff; letter-spacing: .2px;
     }
     .tool-card-desc {
-      font-size: .82rem; color: rgba(255,255,255,.7);
-      line-height: 1.45;
+      font-size: .75rem; color: rgba(255,255,255,.65);
+      line-height: 1.35;
     }
     .tool-card-action {
-      margin-top: 4px;
-      font-family: 'Fredoka One', cursive; font-size: .9rem;
-      color: #f9c74f;
-      letter-spacing: .3px;
+      font-family: 'Fredoka One', cursive; font-size: .85rem;
+      color: #f9c74f; letter-spacing: .2px; flex-shrink: 0; margin-left: 4px;
     }
 
     /* ── Footer ── */
@@ -393,8 +404,9 @@
       box-shadow:0 3px 10px rgba(0,0,0,.25);
     }
     .ai-result-btn:hover { transform:translateY(-2px); }
-    .btn-download-ai { background:linear-gradient(135deg,#a8edea,#fed6e3); color:#006b5a; }
-    .btn-retry-ai    { background:linear-gradient(135deg,#ff9a9e,#fecfef); color:#7b0030; }
+    .btn-download-ai  { background:linear-gradient(135deg,#a8edea,#fed6e3); color:#006b5a; }
+    .btn-retry-ai     { background:linear-gradient(135deg,#ff9a9e,#fecfef); color:#7b0030; }
+    .btn-to-canvas    { background:linear-gradient(135deg,#c084fc,#818cf8); color:#1e0057; }
 
     /* error */
     #ai-error {
@@ -403,6 +415,86 @@
       border:1px solid rgba(255,100,100,.4);
     }
     #ai-error.show { display:block; }
+
+    /* ══════════════════════════════
+       CONNECT THE DOTS MODAL
+    ══════════════════════════════ */
+    #dots-modal {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      display:none; align-items:center; justify-content:center;
+    }
+    #dots-modal.open { display:flex; }
+
+    #dots-panel {
+      background:linear-gradient(160deg, #2d0057, #7c3aed);
+      border-radius:24px; padding:22px;
+      width:min(95vw, 560px);
+      display:flex; flex-direction:column; gap:14px;
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+      border:1.5px solid rgba(255,255,255,.25);
+      max-height:90vh; overflow-y:auto;
+    }
+    #dots-panel::-webkit-scrollbar { width:6px; }
+    #dots-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,.3); border-radius:3px; }
+
+    #dots-panel-header { display:flex; justify-content:space-between; align-items:center; }
+    #dots-panel-header h3 { font-family:'Fredoka One',cursive; color:#fff; font-size:1.35rem; }
+    #dots-panel-close {
+      font-size:1.4rem; color:rgba(255,255,255,.7); cursor:pointer;
+      border:none; background:none; line-height:1; padding:4px 10px;
+      border-radius:8px; transition:background .15s;
+    }
+    #dots-panel-close:hover { background:rgba(255,255,255,.2); color:#fff; }
+
+    #dots-sketch-preview {
+      width:100%; border-radius:12px; overflow:hidden;
+      border:2px solid rgba(255,255,255,.2);
+      background:#111; max-height:160px; display:flex; align-items:center; justify-content:center;
+    }
+    #dots-sketch-preview img { width:100%; height:auto; display:block; max-height:160px; object-fit:contain; }
+
+    /* slider */
+    .dots-slider-row {
+      display:flex; align-items:center; gap:12px;
+    }
+    .dots-slider-label { font-family:'Fredoka One',cursive; color:rgba(255,255,255,.9); font-size:.92rem; white-space:nowrap; }
+    #dots-count {
+      flex:1; accent-color:#c084fc; cursor:pointer; height:6px;
+    }
+    #dots-count-display {
+      font-family:'Fredoka One',cursive; color:#f9c74f; font-size:1rem;
+      min-width:32px; text-align:right;
+    }
+
+    /* generate button */
+    #dots-generate-btn {
+      font-family:'Fredoka One',cursive; font-size:1.05rem;
+      border:none; border-radius:16px; padding:12px 24px; cursor:pointer;
+      background:linear-gradient(135deg,#c084fc,#818cf8);
+      color:#1e0057; box-shadow:0 4px 20px rgba(192,132,252,.35);
+      transition:transform .15s, box-shadow .15s; width:100%;
+    }
+    #dots-generate-btn:hover  { transform:translateY(-2px); box-shadow:0 7px 24px rgba(192,132,252,.5); }
+    #dots-generate-btn:active { transform:translateY(0); }
+    #dots-generate-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    /* result */
+    #dots-result { display:none; flex-direction:column; gap:10px; }
+    #dots-result.show { display:flex; }
+    #dots-result-img {
+      width:100%; border-radius:14px; display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,.4);
+      border:2px solid rgba(255,255,255,.2);
+    }
+
+    /* warning / error */
+    #dots-warning {
+      display:none; background:rgba(249,199,79,.15); border-radius:12px;
+      padding:12px 16px; color:#fff; font-size:.9rem; text-align:center;
+      border:1px solid rgba(249,199,79,.35);
+    }
+    #dots-warning.show { display:block; }
   </style>
 </head>
 <body>
@@ -451,7 +543,7 @@
     <!-- Loading -->
     <div id="ai-loading">
       <div class="ai-spinner">✨</div>
-      <span>Creating magic… this takes ~10 seconds</span>
+      <span id="ai-loading-msg">Creating magic… <span id="ai-elapsed">0</span>s</span>
     </div>
 
     <!-- Error -->
@@ -462,7 +554,43 @@
       <img id="ai-result-img" src="" alt="AI generated art">
       <div class="ai-result-actions">
         <button class="ai-result-btn btn-retry-ai"    onclick="generateAIImage()">🔄 Try Again</button>
-        <button class="ai-result-btn btn-download-ai" onclick="downloadAIImage()">💾 Download AI Art</button>
+        <button class="ai-result-btn btn-to-canvas"   onclick="copyToCanvas()">🖼️ Copy to Canvas</button>
+        <button class="ai-result-btn btn-download-ai" onclick="downloadAIImage()">💾 Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Connect the Dots Modal ══ -->
+<div id="dots-modal">
+  <div id="dots-panel">
+    <div id="dots-panel-header">
+      <h3>🔢 Connect the Dots</h3>
+      <button id="dots-panel-close" onclick="closeDotsModal()">✕</button>
+    </div>
+
+    <!-- Sketch preview -->
+    <div id="dots-sketch-preview"><img id="dots-sketch-img" src="" alt="your sketch"></div>
+
+    <!-- Dot count slider -->
+    <div class="dots-slider-row">
+      <span class="dots-slider-label">Number of dots:</span>
+      <input type="range" id="dots-count" min="15" max="120" value="50">
+      <span id="dots-count-display">50</span>
+    </div>
+
+    <!-- Generate button -->
+    <button id="dots-generate-btn" onclick="renderDots()">● Generate Dots</button>
+
+    <!-- Warning (empty canvas) -->
+    <div id="dots-warning">Draw something on the canvas first, then come back here! 🎨</div>
+
+    <!-- Result -->
+    <div id="dots-result">
+      <img id="dots-result-img" src="" alt="connect the dots">
+      <div class="ai-result-actions">
+        <button class="ai-result-btn btn-to-canvas"   onclick="dotsToCanvas()">🖼️ Copy to Canvas</button>
+        <button class="ai-result-btn btn-download-ai" onclick="downloadDots()">💾 Download</button>
       </div>
     </div>
   </div>
@@ -490,7 +618,7 @@
   <div class="tools-section">
     <div class="tools-header">
       <span class="tools-title">🛠️ Tools</span>
-      <span class="tools-subtitle">Use your sketch as a starting point</span>
+      <span class="tools-subtitle">First draw your sketch below on the canvas and then use these tools to add magic</span>
     </div>
     <div class="tools-grid">
 
@@ -502,6 +630,16 @@
           <div class="tool-card-desc">Turn your sketch into a stunning AI‑generated image using the FLUX model. Free, no sign‑up needed.</div>
         </div>
         <div class="tool-card-action">Generate →</div>
+      </div>
+
+      <!-- Connect the Dots tool -->
+      <div class="tool-card" onclick="openDotsModal()">
+        <div class="tool-card-icon">🔢</div>
+        <div class="tool-card-body">
+          <div class="tool-card-name">Connect the Dots</div>
+          <div class="tool-card-desc">Turn your sketch into a numbered connect-the-dots puzzle. Print it and solve!</div>
+        </div>
+        <div class="tool-card-action">Create →</div>
       </div>
 
     </div>
@@ -565,6 +703,7 @@
         <button class="action-btn btn-undo"  onclick="undo()"        title="Undo (Ctrl+Z)">↩️ Undo</button>
         <button class="action-btn btn-clear" onclick="clearAll()"    title="Clear canvas">🗑️ Clear</button>
         <button class="action-btn btn-save"  onclick="saveDrawing()" title="Save SVG (Ctrl+S)">💾 Save</button>
+        <button class="action-btn btn-print" onclick="printCanvas()" title="Print canvas">🖨️ Print</button>
       </div>
     </div>
 
@@ -1100,6 +1239,7 @@ document.addEventListener('keydown',e=>{
 // ════════════════════════════════
 let aiSelectedStyle = 'magical fantasy art, glowing colors, whimsical, enchanted';
 let aiLastPromptURL = null;
+let aiElapsedTimer = null;
 
 // Style button selection
 document.querySelectorAll('.style-btn').forEach(btn => {
@@ -1151,6 +1291,7 @@ async function openAIModal() {
 }
 
 function closeAIModal() {
+  clearInterval(aiElapsedTimer);
   document.getElementById('ai-modal').classList.remove('open');
 }
 
@@ -1169,6 +1310,14 @@ async function generateAIImage() {
   document.getElementById('ai-loading').classList.add('show');
   document.getElementById('ai-generate-btn').disabled = true;
 
+  // Elapsed time counter
+  clearInterval(aiElapsedTimer);
+  let aiElapsed = 0;
+  document.getElementById('ai-elapsed').textContent = '0';
+  aiElapsedTimer = setInterval(() => {
+    document.getElementById('ai-elapsed').textContent = ++aiElapsed;
+  }, 1000);
+
   const fullPrompt = `${prompt}, ${aiSelectedStyle}, vibrant colors, beautiful, highly detailed`;
   const seed = Math.floor(Math.random() * 99999);
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`
@@ -1177,16 +1326,57 @@ async function generateAIImage() {
 
   const img = document.getElementById('ai-result-img');
   img.onload = () => {
+    clearInterval(aiElapsedTimer);
     document.getElementById('ai-loading').classList.remove('show');
     document.getElementById('ai-result').classList.add('show');
     document.getElementById('ai-generate-btn').disabled = false;
   };
   img.onerror = () => {
+    clearInterval(aiElapsedTimer);
     document.getElementById('ai-loading').classList.remove('show');
     document.getElementById('ai-error').classList.add('show');
     document.getElementById('ai-generate-btn').disabled = false;
   };
   img.src = url;
+}
+
+async function copyToCanvas() {
+  if (!aiLastPromptURL) return;
+  const btn = document.querySelector('.btn-to-canvas');
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading…';
+  try {
+    // Fetch image and convert to base64 data URL so it embeds in the SVG
+    const blob = await fetch(aiLastPromptURL).then(r => r.blob());
+    const dataURL = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+
+    // Replace canvas contents
+    deselectStamp();
+    STROKES.innerHTML = '';
+    history = [];
+
+    const imgEl = document.createElementNS(NS, 'image');
+    imgEl.setAttribute('href', dataURL);
+    imgEl.setAttribute('x', '0');
+    imgEl.setAttribute('y', '0');
+    imgEl.setAttribute('width', VW);
+    imgEl.setAttribute('height', VH);
+    imgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    STROKES.appendChild(imgEl);
+    history.push(imgEl);
+
+    updateStatus();
+    scheduleAutoSave();
+    closeAIModal();
+    setTool('pen');
+  } catch(_) {
+    btn.textContent = '❌ Failed';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '🖼️ Copy to Canvas'; }, 2000);
+  }
 }
 
 async function downloadAIImage() {
@@ -1206,6 +1396,261 @@ async function downloadAIImage() {
     // fallback: open in new tab
     window.open(aiLastPromptURL, '_blank');
   }
+}
+
+// ════════════════════════════════
+//  CONNECT THE DOTS TOOL
+// ════════════════════════════════
+
+// ── Cached dots SVG string for download/copy ──
+let dotsResultSVG = null;
+
+// ── Modal open/close ──
+async function openDotsModal() {
+  document.getElementById('dots-result').classList.remove('show');
+  document.getElementById('dots-warning').classList.remove('show');
+  document.getElementById('dots-modal').classList.add('open');
+  const url = await svgToPreviewURL();
+  const img = document.getElementById('dots-sketch-img');
+  img.src = url;
+  document.getElementById('dots-sketch-preview').style.display = url ? '' : 'none';
+}
+function closeDotsModal() {
+  document.getElementById('dots-modal').classList.remove('open');
+}
+document.getElementById('dots-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('dots-modal')) closeDotsModal();
+});
+
+// ── Slider live display ──
+document.getElementById('dots-count').addEventListener('input', function() {
+  document.getElementById('dots-count-display').textContent = this.value;
+});
+document.getElementById('dots-count').addEventListener('change', renderDots);
+
+// ── Coordinate helper: element-local → SVG viewBox coords ──
+function localToSVGCoords(el, localPt) {
+  const pt = SVG_EL.createSVGPoint();
+  pt.x = localPt.x; pt.y = localPt.y;
+  try {
+    return pt.matrixTransform(el.getScreenCTM())
+              .matrixTransform(SVG_EL.getScreenCTM().inverse());
+  } catch(_) { return pt; }
+}
+
+// ── MODE A: SVG geometry sampling ──
+function sampleFromPaths(dotCount) {
+  const elems = Array.from(STROKES.querySelectorAll('path, circle, rect'))
+    .filter(e => { try { return e.getTotalLength() > 0; } catch(_) { return false; } });
+  if (!elems.length) return null;
+
+  const lengths = elems.map(e => e.getTotalLength());
+  const total   = lengths.reduce((a,b) => a+b, 0);
+  const points  = [];
+
+  elems.forEach((el, i) => {
+    const count = Math.max(1, Math.round((lengths[i] / total) * dotCount));
+    for (let j = 0; j < count; j++) {
+      const t   = (j / count) * lengths[i];
+      const lpt = el.getPointAtLength(t);
+      const gpt = localToSVGCoords(el, lpt);
+      // Deduplicate: skip if too close to previous point
+      if (points.length) {
+        const prev = points[points.length - 1];
+        const dx = gpt.x - prev.x, dy = gpt.y - prev.y;
+        if (dx*dx + dy*dy < 15*15) continue;
+      }
+      points.push({ x: gpt.x, y: gpt.y });
+    }
+  });
+  return points;
+}
+
+// ── MODE B: Sobel edge detection on raster image ──
+async function sampleFromImage(dotCount) {
+  const imgEl = STROKES.querySelector('image');
+  if (!imgEl) return null;
+
+  const SCALE = 0.5;
+  const W = Math.round(VW * SCALE); // 700
+  const H = Math.round(VH * SCALE); // 450
+
+  // Draw image onto offscreen canvas
+  const c   = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  const img = new Image();
+  img.src = imgEl.getAttribute('href');
+  await new Promise(r => { img.onload = r; img.onerror = r; });
+  ctx.drawImage(img, 0, 0, W, H);
+
+  const data = ctx.getImageData(0, 0, W, H).data;
+
+  // Grayscale
+  const gray = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    gray[i] = 0.299 * data[i*4] + 0.587 * data[i*4+1] + 0.114 * data[i*4+2];
+  }
+
+  // Sobel magnitude
+  const mag = new Float32Array(W * H);
+  for (let y = 1; y < H - 1; y++) {
+    for (let x = 1; x < W - 1; x++) {
+      const i = y * W + x;
+      const gx = -gray[i-W-1] + gray[i-W+1] - 2*gray[i-1] + 2*gray[i+1] - gray[i+W-1] + gray[i+W+1];
+      const gy = -gray[i-W-1] - 2*gray[i-W] - gray[i-W+1] + gray[i+W-1] + 2*gray[i+W] + gray[i+W+1];
+      mag[i] = Math.sqrt(gx*gx + gy*gy);
+    }
+  }
+
+  // Grid-thin: pick strongest edge pixel per cell
+  const cols   = Math.ceil(Math.sqrt(dotCount * (W / H)));
+  const rows   = Math.ceil(dotCount / cols);
+  const cellW  = W / cols;
+  const cellH  = H / rows;
+  const THRESH = 20;
+  const raw    = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let cl = 0; cl < cols; cl++) {
+      const x0 = Math.floor(cl * cellW), x1 = Math.min(W, Math.floor((cl+1) * cellW));
+      const y0 = Math.floor(r  * cellH), y1 = Math.min(H, Math.floor((r +1) * cellH));
+      let bestMag = THRESH, bestX = -1, bestY = -1;
+      for (let py = y0; py < y1; py++) {
+        for (let px = x0; px < x1; px++) {
+          if (mag[py * W + px] > bestMag) {
+            bestMag = mag[py * W + px]; bestX = px; bestY = py;
+          }
+        }
+      }
+      if (bestX >= 0) raw.push({ x: bestX / SCALE, y: bestY / SCALE });
+    }
+  }
+
+  if (!raw.length) return null;
+
+  // Nearest-neighbour ordering so dots follow the outline
+  const ordered  = [];
+  const remaining = raw.slice();
+  // Start from topmost point
+  remaining.sort((a,b) => a.y - b.y);
+  ordered.push(remaining.splice(0, 1)[0]);
+  while (remaining.length) {
+    const last = ordered[ordered.length - 1];
+    let minD = Infinity, minIdx = 0;
+    for (let i = 0; i < remaining.length; i++) {
+      const dx = remaining[i].x - last.x, dy = remaining[i].y - last.y;
+      const d  = dx*dx + dy*dy;
+      if (d < minD) { minD = d; minIdx = i; }
+    }
+    ordered.push(remaining.splice(minIdx, 1)[0]);
+  }
+  return ordered;
+}
+
+// ── Build the output SVG string ──
+function buildDotsSVG(points) {
+  const R  = 9;   // dot radius
+  const FS = 11;  // font size
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VW} ${VH}">`;
+  svg += `<rect width="${VW}" height="${VH}" fill="white"/>`;
+  points.forEach((p, i) => {
+    const n = i + 1;
+    const x = p.x.toFixed(1), y = p.y.toFixed(1);
+    svg += `<circle cx="${x}" cy="${y}" r="${R}" fill="#6b21a8"/>`;
+    svg += `<text x="${x}" y="${y}" font-size="${FS}" font-family="Nunito,sans-serif" `
+         + `text-anchor="middle" dominant-baseline="central" fill="white">${n}</text>`;
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+// ── Main render function ──
+async function renderDots() {
+  const dotCount = parseInt(document.getElementById('dots-count').value, 10);
+  const btn = document.getElementById('dots-generate-btn');
+  document.getElementById('dots-result').classList.remove('show');
+  document.getElementById('dots-warning').classList.remove('show');
+  btn.disabled = true; btn.textContent = '⏳ Working…';
+
+  try {
+    // Decide mode
+    const hasGeometry = STROKES.querySelectorAll('path, circle, rect').length > 0;
+    const hasImage    = !!STROKES.querySelector('image');
+
+    let points = null;
+    if (hasGeometry) {
+      points = sampleFromPaths(dotCount);
+    } else if (hasImage) {
+      points = await sampleFromImage(dotCount);
+    }
+
+    if (!points || !points.length) {
+      document.getElementById('dots-warning').classList.add('show');
+      return;
+    }
+
+    dotsResultSVG = buildDotsSVG(points);
+    const dataURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(dotsResultSVG);
+    document.getElementById('dots-result-img').src = dataURL;
+    document.getElementById('dots-result').classList.add('show');
+
+  } finally {
+    btn.disabled = false; btn.textContent = '● Generate Dots';
+  }
+}
+
+// ── Copy dots to canvas as native SVG elements ──
+function dotsToCanvas() {
+  if (!dotsResultSVG) return;
+  const parser  = new DOMParser();
+  const dotsSVG = parser.parseFromString(dotsResultSVG, 'image/svg+xml');
+
+  deselectStamp();
+  STROKES.innerHTML = '';
+  history = [];
+
+  // Wrap all dot elements in a single <g> so undo removes them all at once
+  const wrapper = document.createElementNS(NS, 'g');
+  wrapper.setAttribute('data-dots', '1');
+  Array.from(dotsSVG.documentElement.children).forEach(child => {
+    if (child.tagName !== 'rect') wrapper.appendChild(SVG_EL.ownerDocument.importNode(child, true));
+  });
+  STROKES.appendChild(wrapper);
+  history.push(wrapper);
+
+  updateStatus(); scheduleAutoSave();
+  closeDotsModal();
+  setTool('pen');
+}
+
+// ── Download dots SVG ──
+function downloadDots() {
+  if (!dotsResultSVG) return;
+  const blob = new Blob([dotsResultSVG], { type: 'image/svg+xml' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const ts   = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  a.href = url; a.download = `isla-dots-${ts}.svg`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════
+//  PRINT CANVAS
+// ════════════════════════════════
+function printCanvas() {
+  deselectStamp();
+  const clone = SVG_EL.cloneNode(true);
+  clone.removeAttribute('style');
+  const noExp = clone.querySelector('[data-no-export]');
+  if (noExp) noExp.remove();
+  const printArea = document.getElementById('print-area');
+  printArea.innerHTML = '';
+  printArea.appendChild(clone);
+  window.print();
+  setTimeout(() => { printArea.innerHTML = ''; }, 1000);
 }
 
 // ════════════════════════════════
@@ -1250,5 +1695,6 @@ buildBrushSizes();
 loadAutoSave();
 </script>
 
+  <div id="print-area"></div>
 </body>
 </html>
