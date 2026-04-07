@@ -1327,10 +1327,13 @@ async function generateAIImage() {
     document.getElementById('ai-elapsed').textContent = ++aiElapsed;
   }, 1000);
 
-  const fullPrompt = `${prompt}, ${aiSelectedStyle}, vibrant colors, beautiful, highly detailed`;
+  const ISLA_PREFIX = `art by Isla, creative artwork by a girl born in 2018, the original sketch is clearly visible and central to the image,`;
+  const ISLA_SUFFIX = `whimsical, playful, full of wonder, vibrant colors, beautiful`;
+  const fullPrompt = `${ISLA_PREFIX} ${prompt}, ${aiSelectedStyle}, ${ISLA_SUFFIX}`;
   const seed = Math.floor(Math.random() * 99999);
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`
-            + `?model=flux&width=1024&height=768&nologo=true&enhance=true&seed=${seed}`;
+            + `?model=flux&width=1024&height=768&nologo=true&enhance=true&seed=${seed}`
+            + `&negative=${encodeURIComponent('photorealistic,dark,scary,violent,text,watermark')}`;
   aiLastPromptURL = url;
 
   const img = document.getElementById('ai-result-img');
