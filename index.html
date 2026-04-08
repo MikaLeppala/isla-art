@@ -1732,9 +1732,12 @@ async function generateGoogleAIImage() {
     const { models = [] } = await listResp.json();
     const names = models.map(m => m.name);
     console.log('Available Gemini models:', names);
-    // Only pick models that explicitly support image generation output
-    const imageMod = models.find(m => m.name.includes('image-generation') && m.supportedGenerationMethods?.includes('generateContent'))
-      || models.find(m => m.name.includes('flash-exp') && m.supportedGenerationMethods?.includes('generateContent'));
+    // Pick a Gemini model that supports image output via generateContent
+    // Prefer stable image models over previews, avoid imagen-* (different API)
+    const canGen = m => m.supportedGenerationMethods?.includes('generateContent');
+    const imageMod = models.find(m => canGen(m) && /gemini-2\.5-flash-image$/.test(m.name))
+      || models.find(m => canGen(m) && m.name.includes('gemini') && m.name.includes('-image') && !m.name.includes('imagen'))
+      || models.find(m => canGen(m) && m.name.includes('flash-exp'));
     if (!imageMod) {
       throw new Error(`No image-generation model available. Check browser console for the full model list.`);
     }
