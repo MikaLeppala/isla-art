@@ -531,6 +531,54 @@
     #dots-warning.show { display:block; }
 
     /* ══════════════════════════════
+       COLOURING SHEET MODAL
+    ══════════════════════════════ */
+    #colouring-modal {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      display:none; align-items:center; justify-content:center;
+    }
+    #colouring-modal.open { display:flex; }
+    #colouring-panel {
+      background:linear-gradient(160deg,#064e3b,#059669);
+      border-radius:24px; padding:22px;
+      width:min(95vw,560px);
+      display:flex; flex-direction:column; gap:14px;
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+      border:1.5px solid rgba(255,255,255,.25);
+      max-height:90vh; overflow-y:auto;
+    }
+    #colouring-panel::-webkit-scrollbar { width:6px; }
+    #colouring-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,.3); border-radius:3px; }
+    #colouring-panel-header { display:flex; justify-content:space-between; align-items:center; }
+    #colouring-panel-header h3 { font-family:'Fredoka One',cursive; color:#fff; font-size:1.35rem; }
+    #colouring-panel-close {
+      font-size:1.4rem; color:rgba(255,255,255,.7); cursor:pointer;
+      border:none; background:none; line-height:1; padding:4px 10px;
+      border-radius:8px; transition:background .15s;
+    }
+    #colouring-panel-close:hover { background:rgba(255,255,255,.2); color:#fff; }
+    #colouring-result { display:none; flex-direction:column; gap:10px; }
+    #colouring-result.show { display:flex; }
+    #colouring-result-img {
+      width:100%; border-radius:14px; display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,.4); border:2px solid rgba(255,255,255,.2);
+      background:#fff;
+    }
+    #colouring-loading {
+      display:none; flex-direction:column; align-items:center;
+      gap:10px; padding:16px 0; color:rgba(255,255,255,.85);
+      font-family:'Fredoka One',cursive; font-size:1rem;
+    }
+    #colouring-loading.show { display:flex; }
+    #colouring-warning {
+      display:none; background:rgba(249,199,79,.15); border-radius:12px;
+      padding:12px 16px; color:#fff; font-size:.9rem; text-align:center;
+      border:1px solid rgba(249,199,79,.35);
+    }
+    #colouring-warning.show { display:block; }
+
+    /* ══════════════════════════════
        GOOGLE AI MODAL
     ══════════════════════════════ */
     #google-modal {
@@ -673,6 +721,29 @@
   </div>
 </div>
 
+<!-- ══ Colouring Sheet Modal ══ -->
+<div id="colouring-modal">
+  <div id="colouring-panel">
+    <div id="colouring-panel-header">
+      <h3>🖍️ Colouring Sheet</h3>
+      <button id="colouring-panel-close" onclick="closeColouringModal()">✕</button>
+    </div>
+    <div id="colouring-loading">
+      <div class="ai-spinner">🖍️</div>
+      <span>Creating your colouring sheet…</span>
+    </div>
+    <div id="colouring-warning">Draw something on the canvas first, then come back here! 🎨</div>
+    <div id="colouring-result">
+      <img id="colouring-result-img" src="" alt="Colouring sheet">
+      <div class="ai-result-actions">
+        <button class="ai-result-btn btn-retry-ai"    onclick="generateColouringSheet()">🔄 Regenerate</button>
+        <button class="ai-result-btn btn-to-canvas"   onclick="colouringToCanvas()">🖼️ Copy to Canvas</button>
+        <button class="ai-result-btn btn-download-ai" onclick="downloadColouringSheet()">💾 Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ Google AI Art Modal ══ -->
 <div id="google-modal">
   <div id="google-panel">
@@ -802,7 +873,7 @@
         <div class="tool-card-icon">✨</div>
         <div class="tool-card-body">
           <div class="tool-card-name">AI Art Generator</div>
-          <div class="tool-card-desc">Captioning describes what objects are in your sketch, then generates art from that description. Free, no sign‑up needed — but won't preserve layout.</div>
+          <div class="tool-card-desc">Captions your sketch, then generates art from the description. Free, no sign‑up — layout not preserved.</div>
         </div>
       </div>
 
@@ -811,7 +882,16 @@
         <div class="tool-card-icon">🤖</div>
         <div class="tool-card-body">
           <div class="tool-card-name">Google AI Art</div>
-          <div class="tool-card-desc">Gemini actually sees your sketch and turns it into art. Needs a free Google AI Studio key. May require a VPN (US) due to EU regulations.</div>
+          <div class="tool-card-desc">Gemini sees your sketch and creates art from it. Needs a Google AI Studio key. VPN required in EU.</div>
+        </div>
+      </div>
+
+      <!-- Colouring Sheet tool -->
+      <div class="tool-card" onclick="openColouringModal()">
+        <div class="tool-card-icon">🖍️</div>
+        <div class="tool-card-body">
+          <div class="tool-card-name">Colouring Sheet</div>
+          <div class="tool-card-desc">Turns your sketch into a black &amp; white outline ready to print and colour in.</div>
         </div>
       </div>
 
@@ -1645,6 +1725,8 @@ async function downloadAIImage() {
 let googleLastDataURL = null;
 let googleElapsedTimer = null;
 let googleModelName = null; // cached after first successful lookup
+let googleCooldownTimer = null;
+const GOOGLE_COOLDOWN = 60; // seconds
 
 // Style selection for Google modal (mirrors AI modal logic)
 document.getElementById('google-style-row').addEventListener('click', e => {
@@ -1791,7 +1873,7 @@ async function generateGoogleAIImage() {
     document.getElementById('google-loading').classList.remove('show');
     document.getElementById('google-result-img').src = dataURL;
     document.getElementById('google-result').classList.add('show');
-    document.getElementById('google-generate-btn').disabled = false;
+    startGoogleCooldown();
 
   } catch(err) {
     clearInterval(googleElapsedTimer);
@@ -1799,8 +1881,30 @@ async function generateGoogleAIImage() {
     const errEl = document.getElementById('google-error');
     errEl.textContent = err.message || 'Something went wrong — try again 🌈';
     errEl.classList.add('show');
-    document.getElementById('google-generate-btn').disabled = false;
+    if (err.message?.includes('Too many requests')) {
+      startGoogleCooldown();
+    } else {
+      document.getElementById('google-generate-btn').disabled = false;
+    }
   }
+}
+
+function startGoogleCooldown() {
+  const btn = document.getElementById('google-generate-btn');
+  btn.disabled = true;
+  clearInterval(googleCooldownTimer);
+  let remaining = GOOGLE_COOLDOWN;
+  btn.textContent = `⏳ Wait ${remaining}s`;
+  googleCooldownTimer = setInterval(() => {
+    remaining--;
+    if (remaining <= 0) {
+      clearInterval(googleCooldownTimer);
+      btn.disabled = false;
+      btn.textContent = '🤖 Generate!';
+    } else {
+      btn.textContent = `⏳ Wait ${remaining}s`;
+    }
+  }, 1000);
 }
 
 async function copyGoogleToCanvas() {
@@ -1835,6 +1939,171 @@ async function downloadGoogleAIImage() {
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(a.href);
   } catch(_) { window.open(googleLastDataURL, '_blank'); }
+}
+
+// ════════════════════════════════
+//  COLOURING SHEET TOOL
+// ════════════════════════════════
+
+let colouringResultSVG = null;
+
+document.getElementById('colouring-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('colouring-modal')) closeColouringModal();
+});
+
+async function openColouringModal() {
+  document.getElementById('colouring-result').classList.remove('show');
+  document.getElementById('colouring-warning').classList.remove('show');
+  document.getElementById('colouring-loading').classList.remove('show');
+  document.getElementById('colouring-modal').classList.add('open');
+  await generateColouringSheet();
+}
+
+function closeColouringModal() {
+  document.getElementById('colouring-modal').classList.remove('open');
+}
+
+async function generateColouringSheet() {
+  document.getElementById('colouring-result').classList.remove('show');
+  document.getElementById('colouring-warning').classList.remove('show');
+  document.getElementById('colouring-loading').classList.add('show');
+  colouringResultSVG = null;
+
+  const hasVectors = !!STROKES.querySelector('path, circle, rect, ellipse');
+  const hasImage   = !!STROKES.querySelector('image');
+
+  if (!hasVectors && !hasImage) {
+    document.getElementById('colouring-loading').classList.remove('show');
+    document.getElementById('colouring-warning').classList.add('show');
+    return;
+  }
+
+  if (hasVectors) {
+    colouringResultSVG = makeVectorColouringSheet();
+  } else {
+    colouringResultSVG = await makeRasterColouringSheet();
+  }
+
+  document.getElementById('colouring-loading').classList.remove('show');
+  const dataURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(colouringResultSVG);
+  document.getElementById('colouring-result-img').src = dataURL;
+  document.getElementById('colouring-result').classList.add('show');
+}
+
+function makeVectorColouringSheet() {
+  const clone = SVG_EL.cloneNode(true);
+  const noExp = clone.querySelector('[data-no-export]');
+  if (noExp) noExp.remove();
+
+  // White background
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('x','0'); bg.setAttribute('y','0');
+  bg.setAttribute('width', VW); bg.setAttribute('height', VH);
+  bg.setAttribute('fill','white');
+  clone.insertBefore(bg, clone.firstChild);
+
+  // All drawn paths → black outline, no fill
+  clone.querySelectorAll('path').forEach(el => {
+    el.setAttribute('stroke', '#111');
+    el.setAttribute('fill', 'none');
+    const sw = parseFloat(el.getAttribute('stroke-width') || 2);
+    el.setAttribute('stroke-width', Math.max(sw, 2.5));
+  });
+
+  // Shape stamps → black outline, white fill so they read as shapes to colour
+  clone.querySelectorAll('[data-stamp="1"][data-type="shape"]').forEach(g => {
+    g.querySelectorAll('path, circle, rect, ellipse').forEach(el => {
+      el.setAttribute('fill', 'white');
+      el.setAttribute('stroke', '#111');
+      el.setAttribute('stroke-width', '3');
+    });
+  });
+
+  // Emoji stamps → leave as-is (they add character to the sheet)
+
+  return new XMLSerializer().serializeToString(clone);
+}
+
+async function makeRasterColouringSheet() {
+  // Edge-detection on the AI image → black lines on white background
+  const imgEl = STROKES.querySelector('image');
+  const href = imgEl.getAttribute('href') || imgEl.getAttribute('xlink:href');
+
+  const W = 700, H = 450; // half resolution for speed
+  const offscreen = document.createElement('canvas');
+  offscreen.width = W; offscreen.height = H;
+  const ctx = offscreen.getContext('2d');
+  const img = new Image();
+  await new Promise((resolve, reject) => {
+    img.onload = resolve; img.onerror = reject; img.src = href;
+  });
+  ctx.drawImage(img, 0, 0, W, H);
+
+  const { data } = ctx.getImageData(0, 0, W, H);
+  const gray = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    gray[i] = 0.299 * data[i*4] + 0.587 * data[i*4+1] + 0.114 * data[i*4+2];
+  }
+
+  // Sobel edge detection
+  const edges = new Float32Array(W * H);
+  let maxMag = 0;
+  for (let y = 1; y < H-1; y++) {
+    for (let x = 1; x < W-1; x++) {
+      const idx = y*W+x;
+      const gx = -gray[(y-1)*W+(x-1)] + gray[(y-1)*W+(x+1)]
+                 -2*gray[y*W+(x-1)]   + 2*gray[y*W+(x+1)]
+                 -gray[(y+1)*W+(x-1)] + gray[(y+1)*W+(x+1)];
+      const gy = -gray[(y-1)*W+(x-1)] - 2*gray[(y-1)*W+x] - gray[(y-1)*W+(x+1)]
+                 +gray[(y+1)*W+(x-1)] + 2*gray[(y+1)*W+x] + gray[(y+1)*W+(x+1)];
+      edges[idx] = Math.sqrt(gx*gx + gy*gy);
+      if (edges[idx] > maxMag) maxMag = edges[idx];
+    }
+  }
+
+  // Render: strong edges → black, rest → white
+  const threshold = maxMag * 0.18;
+  const out = ctx.createImageData(W, H);
+  for (let i = 0; i < W * H; i++) {
+    const v = edges[i] > threshold ? 0 : 255;
+    out.data[i*4]   = v;
+    out.data[i*4+1] = v;
+    out.data[i*4+2] = v;
+    out.data[i*4+3] = 255;
+  }
+  ctx.putImageData(out, 0, 0);
+
+  const pngBase64 = offscreen.toDataURL('image/png').split(',')[1];
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VW} ${VH}">` +
+    `<rect width="${VW}" height="${VH}" fill="white"/>` +
+    `<image href="data:image/png;base64,${pngBase64}" x="0" y="0" width="${VW}" height="${VH}" preserveAspectRatio="xMidYMid meet"/>` +
+    `</svg>`;
+}
+
+function colouringToCanvas() {
+  if (!colouringResultSVG) return;
+  deselectStamp();
+  STROKES.innerHTML = ''; history = [];
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(colouringResultSVG, 'image/svg+xml');
+  const g = document.createElementNS(NS, 'g');
+  g.setAttribute('data-colouring','1');
+  Array.from(doc.documentElement.childNodes).forEach(n => g.appendChild(n.cloneNode(true)));
+  STROKES.appendChild(g);
+  history.push(g);
+  updateStatus(); scheduleAutoSave();
+  closeColouringModal(); setTool('pen');
+}
+
+function downloadColouringSheet() {
+  if (!colouringResultSVG) return;
+  const blob = new Blob([colouringResultSVG], { type:'image/svg+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const ts = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  a.download = `isla-colouring-${ts}.svg`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
 }
 
 // ════════════════════════════════
