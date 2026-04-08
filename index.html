@@ -1727,17 +1727,19 @@ async function generateGoogleAIImage() {
     // Find an image-generation capable model from what's actually available
     document.getElementById('google-loading-msg').innerHTML = '🔍 Finding model… <span id="google-elapsed">0</span>s';
     let modelName = 'gemini-2.0-flash-exp'; // fallback
+    const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+    if (!listResp.ok) {
+      const err = await listResp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `🔑 API key rejected (${listResp.status}) — check your Google AI Studio key.`);
+    }
     try {
-      const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-      if (listResp.ok) {
-        const { models = [] } = await listResp.json();
-        // Prefer explicit image-generation models, then flash-exp, then any flash with generateContent
-        const imageMod = models.find(m => m.name.includes('image-generation') && m.supportedGenerationMethods?.includes('generateContent'))
-          || models.find(m => m.name.includes('flash-exp') && m.supportedGenerationMethods?.includes('generateContent'))
-          || models.find(m => m.name.includes('flash') && m.supportedGenerationMethods?.includes('generateContent'));
-        if (imageMod) modelName = imageMod.name.replace('models/', '');
-      }
-    } catch(_) { /* use fallback */ }
+      const { models = [] } = await listResp.json();
+      // Prefer explicit image-generation models, then flash-exp, then any flash with generateContent
+      const imageMod = models.find(m => m.name.includes('image-generation') && m.supportedGenerationMethods?.includes('generateContent'))
+        || models.find(m => m.name.includes('flash-exp') && m.supportedGenerationMethods?.includes('generateContent'))
+        || models.find(m => m.name.includes('flash') && m.supportedGenerationMethods?.includes('generateContent'));
+      if (imageMod) modelName = imageMod.name.replace('models/', '');
+    } catch(_) { /* use fallback model name */ }
     document.getElementById('google-loading-msg').innerHTML = 'Gemini is thinking… <span id="google-elapsed">0</span>s';
 
     const previewURL = await svgToPreviewURL();
@@ -1763,12 +1765,17 @@ async function generateGoogleAIImage() {
     );
 
     if (!response.ok) {
-      let msg = 'Something went wrong — try again 🌈';
+      let msg = `Error ${response.status} — try again 🌈`;
       try {
         const err = await response.json();
-        if (response.status === 400) msg = '🔑 Invalid API key — check your Google AI Studio key.';
-        else if (response.status === 429) msg = '⏳ Too many requests — wait a moment and try again.';
-        else if (err.error?.message) msg = err.error.message;
+        const detail = err.error?.message || '';
+        if (response.status === 401 || response.status === 403 || detail.toLowerCase().includes('api key')) {
+          msg = `🔑 Invalid API key — check your Google AI Studio key. (${response.status})`;
+        } else if (response.status === 429) {
+          msg = '⏳ Too many requests — wait a moment and try again.';
+        } else if (detail) {
+          msg = detail;
+        }
       } catch(_) {}
       throw new Error(msg);
     }
