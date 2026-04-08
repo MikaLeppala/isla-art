@@ -1729,14 +1729,16 @@ async function generateGoogleAIImage() {
       const err = await listResp.json().catch(() => ({}));
       throw new Error(err.error?.message || `🔑 API key rejected (${listResp.status}) — check your Google AI Studio key.`);
     }
-    try {
-      const { models = [] } = await listResp.json();
-      // Prefer explicit image-generation models, then flash-exp, then any flash with generateContent
-      const imageMod = models.find(m => m.name.includes('image-generation') && m.supportedGenerationMethods?.includes('generateContent'))
-        || models.find(m => m.name.includes('flash-exp') && m.supportedGenerationMethods?.includes('generateContent'))
-        || models.find(m => m.name.includes('flash') && m.supportedGenerationMethods?.includes('generateContent'));
-      if (imageMod) modelName = imageMod.name.replace('models/', '');
-    } catch(_) { /* use fallback model name */ }
+    const { models = [] } = await listResp.json();
+    const names = models.map(m => m.name);
+    console.log('Available Gemini models:', names);
+    // Only pick models that explicitly support image generation output
+    const imageMod = models.find(m => m.name.includes('image-generation') && m.supportedGenerationMethods?.includes('generateContent'))
+      || models.find(m => m.name.includes('flash-exp') && m.supportedGenerationMethods?.includes('generateContent'));
+    if (!imageMod) {
+      throw new Error(`No image-generation model available. Check browser console for the full model list.`);
+    }
+    modelName = imageMod.name.replace('models/', '');
     document.getElementById('google-loading-msg').innerHTML = 'Gemini is thinking… <span id="google-elapsed">0</span>s';
 
     const previewURL = await svgToPreviewURL();
