@@ -627,7 +627,7 @@
     <!-- HF Token -->
     <div class="hf-token-row" id="hf-token-row">
       <span class="hf-token-label">🔑 HF Token <em style="font-style:normal;opacity:.6">(optional)</em>:</span>
-      <input class="hf-token-input" id="hf-token-input" type="password" placeholder="hf_…" autocomplete="off">
+      <input class="hf-token-input" id="hf-token-input" type="text" placeholder="hf_…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="hf-token-btn" onclick="saveHFToken()">Save</button>
       <span class="hf-token-link">Helps read your sketch better — free token at <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co/settings/tokens</a></span>
     </div>
@@ -690,7 +690,7 @@
     <!-- API key -->
     <div class="hf-token-row" id="google-key-row">
       <span class="hf-token-label">🔑 Google AI key:</span>
-      <input class="hf-token-input" id="google-key-input" type="password" placeholder="AIza…" autocomplete="off">
+      <input class="hf-token-input" id="google-key-input" type="text" placeholder="AIza…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="hf-token-btn" onclick="saveGoogleKey()">Save</button>
       <span class="hf-token-link">Free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></span>
     </div>
@@ -1465,7 +1465,6 @@ async function openAIModal() {
   // Populate token field
   const savedToken = localStorage.getItem('hf-token') || '';
   const tokenInput = document.getElementById('hf-token-input');
-  tokenInput.type = savedToken ? 'text' : 'password';
   tokenInput.value = savedToken ? (savedToken.slice(0,4) + '••••••••') : '';
   tokenInput.dataset.saved = savedToken ? '1' : '';
   // Generate mini preview of current sketch
@@ -1484,7 +1483,6 @@ function saveHFToken() {
   const val = input.value.trim();
   if (!val || val.includes('•')) return; // nothing new entered
   localStorage.setItem('hf-token', val);
-  input.type = 'text';
   input.value = val.slice(0,4) + '••••••••';
   input.dataset.saved = '1';
   document.getElementById('hf-token-row').style.boxShadow = '0 0 0 2px #4ade80';
@@ -1679,7 +1677,6 @@ async function openGoogleAIModal() {
   // Populate key field
   const saved = localStorage.getItem('google-ai-key') || '';
   const keyInput = document.getElementById('google-key-input');
-  keyInput.type = saved ? 'text' : 'password';
   keyInput.value = saved ? (saved.slice(0,4) + '••••••••') : '';
   // Sketch preview
   const previewURL = await svgToPreviewURL();
