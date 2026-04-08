@@ -529,6 +529,76 @@
       border:1px solid rgba(249,199,79,.35);
     }
     #dots-warning.show { display:block; }
+
+    /* ══════════════════════════════
+       GOOGLE AI MODAL
+    ══════════════════════════════ */
+    #google-modal {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      display:none; align-items:center; justify-content:center;
+    }
+    #google-modal.open { display:flex; }
+    #google-panel {
+      background:linear-gradient(160deg,#00257a,#1a56db);
+      border-radius:24px; padding:22px;
+      width:min(95vw,560px);
+      display:flex; flex-direction:column; gap:14px;
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+      border:1.5px solid rgba(255,255,255,.25);
+      max-height:90vh; overflow-y:auto;
+    }
+    #google-panel::-webkit-scrollbar { width:6px; }
+    #google-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,.3); border-radius:3px; }
+    #google-panel-header { display:flex; justify-content:space-between; align-items:center; }
+    #google-panel-header h3 { font-family:'Fredoka One',cursive; color:#fff; font-size:1.35rem; }
+    #google-panel-close {
+      font-size:1.4rem; color:rgba(255,255,255,.7); cursor:pointer;
+      border:none; background:none; line-height:1; padding:4px 10px;
+      border-radius:8px; transition:background .15s;
+    }
+    #google-panel-close:hover { background:rgba(255,255,255,.2); color:#fff; }
+    #google-sketch-preview {
+      width:100%; border-radius:12px; overflow:hidden;
+      border:2px solid rgba(255,255,255,.2);
+      background:#111; max-height:180px; display:flex; align-items:center; justify-content:center;
+    }
+    #google-sketch-preview img { width:100%; height:auto; display:block; max-height:180px; object-fit:contain; }
+    #google-prompt-label { font-family:'Fredoka One',cursive; color:rgba(255,255,255,.9); font-size:.95rem; }
+    #google-prompt {
+      width:100%; border-radius:12px; border:2px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.12); color:#fff; font-family:'Nunito',sans-serif;
+      font-size:1rem; padding:10px 14px; resize:none; outline:none; transition:border-color .2s;
+    }
+    #google-prompt::placeholder { color:rgba(255,255,255,.45); }
+    #google-prompt:focus { border-color:rgba(255,255,255,.6); background:rgba(255,255,255,.18); }
+    #google-generate-btn {
+      font-family:'Fredoka One',cursive; font-size:1.05rem;
+      border:none; border-radius:16px; padding:12px 24px; cursor:pointer;
+      background:linear-gradient(135deg,#34d399,#3b82f6);
+      color:#003322; box-shadow:0 4px 20px rgba(52,211,153,.35);
+      transition:transform .15s, box-shadow .15s; width:100%;
+    }
+    #google-generate-btn:hover  { transform:translateY(-2px); box-shadow:0 7px 24px rgba(52,211,153,.5); }
+    #google-generate-btn:active { transform:translateY(0); }
+    #google-generate-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+    #google-loading {
+      display:none; flex-direction:column; align-items:center;
+      gap:10px; padding:16px 0; color:rgba(255,255,255,.85);
+      font-family:'Fredoka One',cursive; font-size:1rem;
+    }
+    #google-loading.show { display:flex; }
+    #google-result { display:none; flex-direction:column; gap:10px; }
+    #google-result.show { display:flex; }
+    #google-result-img {
+      width:100%; border-radius:14px; display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,.4); border:2px solid rgba(255,255,255,.2);
+    }
+    #google-error {
+      display:none; background:rgba(255,100,100,.2); border-radius:12px;
+      padding:12px 16px; color:#fff; font-size:.9rem; text-align:center;
+    }
+    #google-error.show { display:block; }
   </style>
 </head>
 <body>
@@ -603,6 +673,69 @@
   </div>
 </div>
 
+<!-- ══ Google AI Art Modal ══ -->
+<div id="google-modal">
+  <div id="google-panel">
+    <div id="google-panel-header">
+      <h3>🤖 Google AI Art</h3>
+      <button id="google-panel-close" onclick="closeGoogleAIModal()">✕</button>
+    </div>
+
+    <!-- Sketch preview -->
+    <div>
+      <div style="font-family:'Fredoka One',cursive;color:rgba(255,255,255,.8);font-size:.9rem;margin-bottom:6px;">Your sketch:</div>
+      <div id="google-sketch-preview"><img id="google-sketch-img" src="" alt="your sketch"></div>
+    </div>
+
+    <!-- API key -->
+    <div class="hf-token-row" id="google-key-row">
+      <span class="hf-token-label">🔑 Google AI key:</span>
+      <input class="hf-token-input" id="google-key-input" type="password" placeholder="AIza…" autocomplete="off">
+      <button class="hf-token-btn" onclick="saveGoogleKey()">Save</button>
+      <span class="hf-token-link">Free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></span>
+    </div>
+
+    <!-- Prompt -->
+    <div>
+      <label id="google-prompt-label" for="google-prompt">Describe what to create:</label>
+      <textarea id="google-prompt" rows="2" placeholder='e.g. "a magical unicorn in a rainbow forest"'></textarea>
+    </div>
+
+    <!-- Style selector (reuses same style-btn class) -->
+    <div>
+      <div style="font-family:'Fredoka One',cursive;color:rgba(255,255,255,.8);font-size:.9rem;margin-bottom:8px;">Style:</div>
+      <div class="ai-style-row" id="google-style-row">
+        <button class="style-btn active" data-style="magical fantasy art, glowing colors, whimsical, enchanted">✨ Magical</button>
+        <button class="style-btn" data-style="cartoon illustration, bold outlines, fun, colorful, kids art">🎨 Cartoon</button>
+        <button class="style-btn" data-style="watercolour painting, soft washes, delicate, artistic, pastel">🌊 Watercolour</button>
+        <button class="style-btn" data-style="photorealistic, highly detailed, cinematic lighting, sharp">📸 Realistic</button>
+      </div>
+    </div>
+
+    <!-- Generate button -->
+    <button id="google-generate-btn" onclick="generateGoogleAIImage()">🤖 Generate!</button>
+
+    <!-- Loading -->
+    <div id="google-loading">
+      <div class="ai-spinner">🤖</div>
+      <span id="google-loading-msg">Gemini is thinking… <span id="google-elapsed">0</span>s</span>
+    </div>
+
+    <!-- Error -->
+    <div id="google-error"></div>
+
+    <!-- Result -->
+    <div id="google-result">
+      <img id="google-result-img" src="" alt="Google AI generated art">
+      <div class="ai-result-actions">
+        <button class="ai-result-btn btn-retry-ai"    onclick="generateGoogleAIImage()">🔄 Try Again</button>
+        <button class="ai-result-btn btn-to-canvas"   onclick="copyGoogleToCanvas()">🖼️ Copy to Canvas</button>
+        <button class="ai-result-btn btn-download-ai" onclick="downloadGoogleAIImage()">💾 Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ Connect the Dots Modal ══ -->
 <div id="dots-modal">
   <div id="dots-panel">
@@ -669,7 +802,16 @@
         <div class="tool-card-icon">✨</div>
         <div class="tool-card-body">
           <div class="tool-card-name">AI Art Generator</div>
-          <div class="tool-card-desc">Turn your sketch into a stunning AI‑generated image using the FLUX model. Free, no sign‑up needed.</div>
+          <div class="tool-card-desc">Captioning describes what objects are in your sketch, then generates art from that description. Free, no sign‑up needed — but won't preserve layout.</div>
+        </div>
+      </div>
+
+      <!-- Google AI Art tool -->
+      <div class="tool-card" onclick="openGoogleAIModal()">
+        <div class="tool-card-icon">🤖</div>
+        <div class="tool-card-body">
+          <div class="tool-card-name">Google AI Art</div>
+          <div class="tool-card-desc">Gemini actually sees your sketch and turns it into art. Needs a free Google AI Studio key.</div>
         </div>
       </div>
 
@@ -1496,6 +1638,180 @@ async function downloadAIImage() {
     // fallback: open in new tab
     window.open(aiLastPromptURL, '_blank');
   }
+}
+
+// ════════════════════════════════
+//  GOOGLE AI ART
+// ════════════════════════════════
+
+let googleLastDataURL = null;
+let googleElapsedTimer = null;
+
+// Style selection for Google modal (mirrors AI modal logic)
+document.getElementById('google-style-row').addEventListener('click', e => {
+  const btn = e.target.closest('.style-btn');
+  if (!btn) return;
+  document.querySelectorAll('#google-style-row .style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+document.getElementById('google-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('google-modal')) closeGoogleAIModal();
+});
+
+function saveGoogleKey() {
+  const input = document.getElementById('google-key-input');
+  const val = input.value.trim();
+  if (!val || val.includes('•')) return;
+  localStorage.setItem('google-ai-key', val);
+  input.type = 'text';
+  input.value = val.slice(0,4) + '••••••••';
+  document.getElementById('google-key-row').style.boxShadow = '0 0 0 2px #4ade80';
+  setTimeout(() => document.getElementById('google-key-row').style.boxShadow = '', 1500);
+}
+
+async function openGoogleAIModal() {
+  document.getElementById('google-result').classList.remove('show');
+  document.getElementById('google-loading').classList.remove('show');
+  document.getElementById('google-error').classList.remove('show');
+  document.getElementById('google-loading-msg').innerHTML = 'Gemini is thinking… <span id="google-elapsed">0</span>s';
+  document.getElementById('google-modal').classList.add('open');
+  // Populate key field
+  const saved = localStorage.getItem('google-ai-key') || '';
+  const keyInput = document.getElementById('google-key-input');
+  keyInput.type = saved ? 'text' : 'password';
+  keyInput.value = saved ? (saved.slice(0,4) + '••••••••') : '';
+  // Sketch preview
+  const previewURL = await svgToPreviewURL();
+  const img = document.getElementById('google-sketch-img');
+  if (previewURL) { img.src = previewURL; document.getElementById('google-sketch-preview').style.display = ''; }
+  else { document.getElementById('google-sketch-preview').style.display = 'none'; }
+}
+
+function closeGoogleAIModal() {
+  clearInterval(googleElapsedTimer);
+  document.getElementById('google-modal').classList.remove('open');
+}
+
+async function generateGoogleAIImage() {
+  const prompt = document.getElementById('google-prompt').value.trim();
+  const key = localStorage.getItem('google-ai-key') || '';
+
+  if (!prompt) {
+    document.getElementById('google-prompt').focus();
+    document.getElementById('google-prompt').style.borderColor = '#f9c74f';
+    setTimeout(() => document.getElementById('google-prompt').style.borderColor = '', 1500);
+    return;
+  }
+  if (!key) {
+    const row = document.getElementById('google-key-row');
+    row.style.boxShadow = '0 0 0 2px #f9c74f';
+    setTimeout(() => row.style.boxShadow = '', 1500);
+    document.getElementById('google-key-input').focus();
+    return;
+  }
+
+  document.getElementById('google-result').classList.remove('show');
+  document.getElementById('google-error').classList.remove('show');
+  document.getElementById('google-loading').classList.add('show');
+  document.getElementById('google-generate-btn').disabled = true;
+
+  clearInterval(googleElapsedTimer);
+  let elapsed = 0;
+  document.getElementById('google-elapsed').textContent = '0';
+  googleElapsedTimer = setInterval(() => {
+    document.getElementById('google-elapsed').textContent = ++elapsed;
+  }, 1000);
+
+  try {
+    const previewURL = await svgToPreviewURL();
+    const base64sketch = previewURL ? previewURL.split(',')[1] : null;
+    const selectedStyle = document.querySelector('#google-style-row .style-btn.active')?.dataset.style || '';
+
+    const ISLA_PREFIX = `You are creating art for Isla, a creative girl born in 2018. Look at the sketch provided and transform it into a beautiful artwork. Preserve the elements and composition from the sketch.`;
+    const fullPrompt = `${ISLA_PREFIX} Subject: ${prompt}. Style: ${selectedStyle}, whimsical, playful, vibrant colors, full of wonder. Keep all elements from the sketch visible in the final image.`;
+
+    const parts = [{ text: fullPrompt }];
+    if (base64sketch) parts.push({ inline_data: { mime_type: 'image/png', data: base64sketch } });
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts }],
+          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      let msg = 'Something went wrong — try again 🌈';
+      try {
+        const err = await response.json();
+        if (response.status === 400) msg = '🔑 Invalid API key — check your Google AI Studio key.';
+        else if (response.status === 429) msg = '⏳ Too many requests — wait a moment and try again.';
+        else if (err.error?.message) msg = err.error.message;
+      } catch(_) {}
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    if (!imagePart) throw new Error('No image in response — try again 🌈');
+
+    const dataURL = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+    googleLastDataURL = dataURL;
+
+    clearInterval(googleElapsedTimer);
+    document.getElementById('google-loading').classList.remove('show');
+    document.getElementById('google-result-img').src = dataURL;
+    document.getElementById('google-result').classList.add('show');
+    document.getElementById('google-generate-btn').disabled = false;
+
+  } catch(err) {
+    clearInterval(googleElapsedTimer);
+    document.getElementById('google-loading').classList.remove('show');
+    const errEl = document.getElementById('google-error');
+    errEl.textContent = err.message || 'Something went wrong — try again 🌈';
+    errEl.classList.add('show');
+    document.getElementById('google-generate-btn').disabled = false;
+  }
+}
+
+async function copyGoogleToCanvas() {
+  if (!googleLastDataURL) return;
+  const btn = document.querySelector('#google-result .btn-to-canvas');
+  btn.disabled = true; btn.textContent = '⏳ Loading…';
+  try {
+    deselectStamp();
+    STROKES.innerHTML = ''; history = [];
+    const imgEl = document.createElementNS(NS, 'image');
+    imgEl.setAttribute('href', googleLastDataURL);
+    imgEl.setAttribute('x', '0'); imgEl.setAttribute('y', '0');
+    imgEl.setAttribute('width', VW); imgEl.setAttribute('height', VH);
+    imgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    STROKES.appendChild(imgEl); history.push(imgEl);
+    updateStatus(); scheduleAutoSave();
+    closeGoogleAIModal(); setTool('pen');
+  } catch(_) {
+    btn.textContent = '❌ Failed';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '🖼️ Copy to Canvas'; }, 2000);
+  }
+}
+
+async function downloadGoogleAIImage() {
+  if (!googleLastDataURL) return;
+  try {
+    const blob = await fetch(googleLastDataURL).then(r => r.blob());
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const ts = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+    a.download = `isla-google-art-${ts}.png`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  } catch(_) { window.open(googleLastDataURL, '_blank'); }
 }
 
 // ════════════════════════════════
