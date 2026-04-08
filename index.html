@@ -1965,11 +1965,12 @@ function makeVectorColouringSheet() {
 }
 
 async function makeRasterColouringSheet() {
-  // Edge-detection on the AI image → black lines on white background
+  // Pencil-sketch technique: invert → blur → color-dodge blend
+  // Follows luminance contours, giving continuous lines across smooth areas
   const imgEl = STROKES.querySelector('image');
   const href = imgEl.getAttribute('href') || imgEl.getAttribute('xlink:href');
 
-  const W = 700, H = 450; // half resolution for speed
+  const W = 700, H = 450;
   const offscreen = document.createElement('canvas');
   offscreen.width = W; offscreen.height = H;
   const ctx = offscreen.getContext('2d');
@@ -1980,35 +1981,33 @@ async function makeRasterColouringSheet() {
   ctx.drawImage(img, 0, 0, W, H);
 
   const { data } = ctx.getImageData(0, 0, W, H);
-  const gray = new Float32Array(W * H);
-  for (let i = 0; i < W * H; i++) {
-    gray[i] = 0.299 * data[i*4] + 0.587 * data[i*4+1] + 0.114 * data[i*4+2];
+  const n = W * H;
+
+  // 1. Grayscale
+  const gray = new Uint8ClampedArray(n);
+  for (let i = 0; i < n; i++) {
+    gray[i] = Math.round(0.299 * data[i*4] + 0.587 * data[i*4+1] + 0.114 * data[i*4+2]);
   }
 
-  // Sobel edge detection
-  const edges = new Float32Array(W * H);
-  let maxMag = 0;
-  for (let y = 1; y < H-1; y++) {
-    for (let x = 1; x < W-1; x++) {
-      const idx = y*W+x;
-      const gx = -gray[(y-1)*W+(x-1)] + gray[(y-1)*W+(x+1)]
-                 -2*gray[y*W+(x-1)]   + 2*gray[y*W+(x+1)]
-                 -gray[(y+1)*W+(x-1)] + gray[(y+1)*W+(x+1)];
-      const gy = -gray[(y-1)*W+(x-1)] - 2*gray[(y-1)*W+x] - gray[(y-1)*W+(x+1)]
-                 +gray[(y+1)*W+(x-1)] + 2*gray[(y+1)*W+x] + gray[(y+1)*W+(x+1)];
-      edges[idx] = Math.sqrt(gx*gx + gy*gy);
-      if (edges[idx] > maxMag) maxMag = edges[idx];
-    }
+  // 2. Invert
+  const inv = new Uint8ClampedArray(n);
+  for (let i = 0; i < n; i++) inv[i] = 255 - gray[i];
+
+  // 3. Box blur the inverted channel (radius 12 → thick, smooth lines)
+  const blurred = colouringBoxBlur(inv, W, H, 12);
+
+  // 4. Color-dodge blend: where image meets blurred-inverse, contours emerge as dark lines
+  const dodge = new Uint8ClampedArray(n);
+  for (let i = 0; i < n; i++) {
+    const b = blurred[i];
+    dodge[i] = b >= 255 ? 255 : Math.min(255, Math.round(gray[i] * 255 / (255 - b)));
   }
 
-  // Render: strong edges → black, rest → white
-  const threshold = maxMag * 0.18;
+  // 5. Threshold → black lines on white
   const out = ctx.createImageData(W, H);
-  for (let i = 0; i < W * H; i++) {
-    const v = edges[i] > threshold ? 0 : 255;
-    out.data[i*4]   = v;
-    out.data[i*4+1] = v;
-    out.data[i*4+2] = v;
+  for (let i = 0; i < n; i++) {
+    const v = dodge[i] > 225 ? 255 : 0;
+    out.data[i*4] = out.data[i*4+1] = out.data[i*4+2] = v;
     out.data[i*4+3] = 255;
   }
   ctx.putImageData(out, 0, 0);
@@ -2018,6 +2017,33 @@ async function makeRasterColouringSheet() {
     `<rect width="${VW}" height="${VH}" fill="white"/>` +
     `<image href="data:image/png;base64,${pngBase64}" x="0" y="0" width="${VW}" height="${VH}" preserveAspectRatio="xMidYMid meet"/>` +
     `</svg>`;
+}
+
+function colouringBoxBlur(src, W, H, radius) {
+  const tmp = new Uint8ClampedArray(W * H);
+  const dst = new Uint8ClampedArray(W * H);
+  const r = radius;
+  // Horizontal pass
+  for (let y = 0; y < H; y++) {
+    let sum = 0;
+    for (let x = -r; x <= r; x++) sum += src[y * W + Math.max(0, Math.min(W-1, x))];
+    for (let x = 0; x < W; x++) {
+      tmp[y * W + x] = Math.round(sum / (r * 2 + 1));
+      sum -= src[y * W + Math.max(0, x - r)];
+      sum += src[y * W + Math.min(W-1, x + r + 1)];
+    }
+  }
+  // Vertical pass
+  for (let x = 0; x < W; x++) {
+    let sum = 0;
+    for (let y = -r; y <= r; y++) sum += tmp[Math.max(0, Math.min(H-1, y)) * W + x];
+    for (let y = 0; y < H; y++) {
+      dst[y * W + x] = Math.round(sum / (r * 2 + 1));
+      sum -= tmp[Math.max(0, y - r) * W + x];
+      sum += tmp[Math.min(H-1, y + r + 1) * W + x];
+    }
+  }
+  return dst;
 }
 
 function colouringToCanvas() {
