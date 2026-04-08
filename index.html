@@ -664,14 +664,6 @@
       <button id="ai-panel-close" onclick="closeAIModal()">✕</button>
     </div>
 
-    <!-- Mini sketch preview -->
-    <div>
-      <div class="ai-style-row" style="margin-bottom:6px;">
-        <span style="font-family:'Fredoka One',cursive;color:rgba(255,255,255,.8);font-size:.9rem;">Your sketch:</span>
-      </div>
-      <div id="ai-sketch-preview"><img id="ai-sketch-img" src="" alt="your sketch"></div>
-    </div>
-
     <!-- Prompt -->
     <div>
       <label id="ai-prompt-label" for="ai-prompt">Describe what to create:</label>
@@ -1534,20 +1526,6 @@ async function openAIModal() {
   document.getElementById('ai-error').classList.remove('show');
   document.getElementById('ai-loading-msg').innerHTML = '✨ Creating magic… <span id="ai-elapsed">0</span>s';
   document.getElementById('ai-modal').classList.add('open');
-  // Populate token field
-  const savedToken = localStorage.getItem('hf-token') || '';
-  const tokenInput = document.getElementById('hf-token-input');
-  tokenInput.value = savedToken ? (savedToken.slice(0,4) + '••••••••') : '';
-  tokenInput.dataset.saved = savedToken ? '1' : '';
-  // Generate mini preview of current sketch
-  const previewURL = await svgToPreviewURL();
-  const previewImg = document.getElementById('ai-sketch-img');
-  if (previewURL) {
-    previewImg.src = previewURL;
-    document.getElementById('ai-sketch-preview').style.display = '';
-  } else {
-    document.getElementById('ai-sketch-preview').style.display = 'none';
-  }
 }
 
 function saveHFToken() {
